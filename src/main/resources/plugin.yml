@@ -1,0 +1,4 @@
+name: RandomDungeon
+version: '${project.version}'
+main: the.david.randomdungeon.RandomDungeon
+api-version: '1.20'
