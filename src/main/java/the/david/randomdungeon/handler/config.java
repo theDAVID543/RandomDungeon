@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import the.david.randomdungeon.RandomDungeon;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,11 +48,22 @@ public class config {
             throw new RuntimeException(e);
         }
     }
+    public void setObject(String path, Object value){
+        dataConfig.set(path, value);
+        try {
+            dataConfig.save(dataConfigFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public String getString(String path){
-        dataConfig.getKeys(false);
         return dataConfig.getString(path);
     }
-    public Set<String> getKeys(String path){
-        return dataConfig.createSection(path).getKeys(false);
+    public Set<String> getKeys(@Nullable String path){
+        if(path != null){
+            return dataConfig.createSection(path).getKeys(false);
+        }else{
+            return dataConfig.getKeys(false);
+        }
     }
 }
