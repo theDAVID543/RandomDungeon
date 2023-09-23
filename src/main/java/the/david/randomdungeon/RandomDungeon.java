@@ -3,18 +3,18 @@ package the.david.randomdungeon;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import the.david.randomdungeon.command.commands;
-import the.david.randomdungeon.dungeon.dungeonPlay;
+import the.david.randomdungeon.dungeon.dungeonInstanceManager;
 import the.david.randomdungeon.dungeon.dungeonEditor;
 import the.david.randomdungeon.handler.config;
 import the.david.randomdungeon.dungeon.dungeonManager;
-import the.david.randomdungeon.handler.dungeonInstance;
+import the.david.randomdungeon.handler.dungeonInstanceWorldHandler;
 
 public final class RandomDungeon extends JavaPlugin {
     public JavaPlugin instance;
     public config dungeonsConfig;
     public dungeonManager dungeonManager;
-    public dungeonPlay dungeonPlay;
-    public dungeonInstance dungeonInstance;
+    public dungeonInstanceManager dungeonInstanceManager;
+    public dungeonInstanceWorldHandler dungeonInstanceWorldHandler;
     public dungeonEditor dungeonEditor;
 
     @Override
@@ -26,14 +26,14 @@ public final class RandomDungeon extends JavaPlugin {
         dungeonsConfig.createCustomConfig();
         dungeonManager = new dungeonManager(this);
         dungeonManager.init();
-        dungeonPlay = new dungeonPlay(this);
-        dungeonInstance = new dungeonInstance(this);
+        dungeonInstanceManager = new dungeonInstanceManager(this);
+        dungeonInstanceWorldHandler = new dungeonInstanceWorldHandler(this);
         dungeonEditor = new dungeonEditor(this);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        dungeonPlay.deleteInstances();
+        dungeonInstanceManager.deleteInstances();
     }
 }

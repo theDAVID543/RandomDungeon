@@ -1,15 +1,13 @@
 package the.david.randomdungeon.handler;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import the.david.randomdungeon.RandomDungeon;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class dungeonInstance {
-    public dungeonInstance(RandomDungeon plugin){
+public class dungeonInstanceWorldHandler {
+    public dungeonInstanceWorldHandler(RandomDungeon plugin){
         this.plugin = plugin;
     }
     private RandomDungeon plugin;

@@ -42,7 +42,7 @@ public class commands implements CommandExecutor {
                 plugin.dungeonEditor.editDungeon(player, args[1]);
             }
             if(Objects.equals(args[0], "play")){
-                plugin.dungeonPlay.playDungeon(player, args[1]);
+                plugin.dungeonInstanceManager.playDungeon(player, args[1]);
             }
         }
         return true;

@@ -17,8 +17,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class dungeonPlay {
-    public dungeonPlay(RandomDungeon plugin){
+public class dungeonInstanceManager {
+    public dungeonInstanceManager(RandomDungeon plugin){
         this.plugin = plugin;
     }
     private RandomDungeon plugin;
@@ -44,7 +44,7 @@ public class dungeonPlay {
         dungeonInstanceAmount.put(dungeonName, dungeonInstanceAmount.get(dungeonName) + 1);
         Bukkit.getWorld(dungeonName).save();
         File dungeonFile = Bukkit.getWorld(dungeonName).getWorldFolder();
-        plugin.dungeonInstance.copyWorld(dungeonFile, new File(plugin.instance.getDataFolder().getPath() + "/DungeonInstances", instanceName));
+        plugin.dungeonInstanceWorldHandler.copyWorld(dungeonFile, new File(plugin.instance.getDataFolder().getPath() + "/DungeonInstances", instanceName));
         WorldCreator worldCreator = new WorldCreator(plugin.instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonInstances/" + instanceName);
         World world = worldCreator.createWorld();
         player.teleport(new Location(world, 8, 1, 8).toCenterLocation());
