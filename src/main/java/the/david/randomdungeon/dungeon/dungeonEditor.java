@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import the.david.randomdungeon.RandomDungeon;
+import the.david.randomdungeon.dungeon.data.dungeonData;
 
 public class dungeonEditor {
     public dungeonEditor(RandomDungeon plugin){
@@ -11,7 +12,7 @@ public class dungeonEditor {
     }
     private RandomDungeon plugin;
     public void editDungeon(Player player, String dungeonName){
-        if(!plugin.dungeonManager.dungeons.contains(dungeonName)){
+        if(!dungeonData.dungeons.contains(dungeonName)){
             return;
         }
         player.teleport(new Location(Bukkit.getWorld(dungeonName), 8, 1, 8).toCenterLocation());

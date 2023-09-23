@@ -2,6 +2,7 @@ package the.david.randomdungeon.dungeon;
 
 import org.bukkit.*;
 import the.david.randomdungeon.RandomDungeon;
+import the.david.randomdungeon.dungeon.data.dungeonData;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,12 +13,11 @@ public class dungeonManager {
     }
     RandomDungeon plugin;
 
-    public Set<String> dungeons = new HashSet<>();
     public void init(){
-        dungeons.addAll(plugin.dungeonsConfig.getKeys(null));
+        dungeonData.dungeons.addAll(plugin.dungeonsConfig.getKeys(null));
     }
     public World createDungeon(String name){
-        if(dungeons.contains(name)){
+        if(dungeonData.dungeons.contains(name)){
             Bukkit.getLogger().info("該Dungeon已存在");
             return null;
         }
@@ -30,7 +30,7 @@ public class dungeonManager {
         Location location = new Location(world, 8, 0, 8);
         location.getBlock().setType(Material.STONE);
         plugin.dungeonsConfig.setObject(name + ".active", false);
-        dungeons.add(name);
+        dungeonData.dungeons.add(name);
         return world;
     }
 }

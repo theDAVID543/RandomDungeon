@@ -9,6 +9,8 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.codehaus.plexus.util.FileUtils;
 import the.david.randomdungeon.RandomDungeon;
+import the.david.randomdungeon.dungeon.data.dungeonData;
+import the.david.randomdungeon.dungeon.data.instanceData;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,39 +24,42 @@ public class dungeonInstanceManager {
         this.plugin = plugin;
     }
     private RandomDungeon plugin;
-    public Set<Player> playingPlayers = new HashSet<>();
-    public Map<String, Integer> dungeonInstanceAmount = new HashMap<>();
-    public Map<String, Set<Player>> dungeonInstancePlayerSet = new HashMap<>();
-    public Map<String, Set<String>> dungeonInstances = new HashMap<>();
     public void playDungeon(Player player, String dungeonName){
-        if(!plugin.dungeonManager.dungeons.contains(dungeonName)){
+        if(!dungeonData.dungeons.contains(dungeonName)){
             player.sendMessage(
                     Component.text("無此Dungeon").color(NamedTextColor.RED)
             );
             return;
         }
-        if(playingPlayers.contains(player)){
+        if(instanceData.playerInDungeon.containsKey(player)){
             player.sendMessage(
                     Component.text("已在Dungeon內").color(NamedTextColor.RED)
             );
             return;
         }
-        dungeonInstanceAmount.putIfAbsent(dungeonName, 0);
-        String instanceName = dungeonName + "_" + dungeonInstanceAmount.get(dungeonName);
-        dungeonInstanceAmount.put(dungeonName, dungeonInstanceAmount.get(dungeonName) + 1);
+        instanceData.dungeonInstanceAmount.putIfAbsent(dungeonName, 0);
+        String instanceName = dungeonName + "_" + instanceData.dungeonInstanceAmount.get(dungeonName);
+        instanceData.dungeonInstanceAmount.put(dungeonName, instanceData.dungeonInstanceAmount.get(dungeonName) + 1);
         Bukkit.getWorld(dungeonName).save();
         File dungeonFile = Bukkit.getWorld(dungeonName).getWorldFolder();
         plugin.dungeonInstanceWorldHandler.copyWorld(dungeonFile, new File(plugin.instance.getDataFolder().getPath() + "/DungeonInstances", instanceName));
         WorldCreator worldCreator = new WorldCreator(plugin.instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonInstances/" + instanceName);
         World world = worldCreator.createWorld();
         player.teleport(new Location(world, 8, 1, 8).toCenterLocation());
-        dungeonInstancePlayerSet.putIfAbsent(instanceName, new HashSet<>());
-        dungeonInstancePlayerSet.get(instanceName).add(player);
-        dungeonInstances.putIfAbsent(dungeonName, new HashSet<>());
-        dungeonInstances.get(dungeonName).add(plugin.instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonInstances/" + instanceName);
+        instanceData.dungeonInstancePlayerSet.putIfAbsent(instanceName, new HashSet<>());
+        instanceData.dungeonInstancePlayerSet.get(instanceName).add(player);
+        instanceData.dungeonInstances.putIfAbsent(dungeonName, new HashSet<>());
+        instanceData.dungeonInstances.get(dungeonName).add(plugin.instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonInstances/" + instanceName);
+        instanceData.playerInDungeon.put(player, plugin.instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonInstances/" + instanceName);
+    }
+    public void leaveDungeon(Player player){
+        if(!instanceData.playerInDungeon.containsKey(player)){
+            return;
+        }
+
     }
     public void deleteInstances(){
-        dungeonInstances.forEach((k,v) ->{
+        instanceData.dungeonInstances.forEach((k, v) ->{
             v.forEach(w ->{
                 World world = Bukkit.getWorld(w);
                 File worldFile = world.getWorldFolder();
