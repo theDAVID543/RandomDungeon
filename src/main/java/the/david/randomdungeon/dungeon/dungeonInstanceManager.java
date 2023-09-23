@@ -14,10 +14,7 @@ import the.david.randomdungeon.dungeon.data.instanceData;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class dungeonInstanceManager {
     public dungeonInstanceManager(RandomDungeon plugin){
@@ -37,6 +34,8 @@ public class dungeonInstanceManager {
             );
             return;
         }
+        instanceData.playerOriginLocation.put(player, player.getLocation());
+
         instanceData.dungeonInstanceAmount.putIfAbsent(dungeonName, 0);
         String instanceName = dungeonName + "_" + instanceData.dungeonInstanceAmount.get(dungeonName);
         instanceData.dungeonInstanceAmount.put(dungeonName, instanceData.dungeonInstanceAmount.get(dungeonName) + 1);
@@ -56,7 +55,11 @@ public class dungeonInstanceManager {
         if(!instanceData.playerInDungeon.containsKey(player)){
             return;
         }
-
+        if(!instanceData.playerOriginLocation.containsKey(player)){
+            return;
+        }
+        player.teleport(instanceData.playerOriginLocation.get(player));
+        instanceData.playerInDungeon.remove(player);
     }
     public void deleteInstances(){
         instanceData.dungeonInstances.forEach((k, v) ->{

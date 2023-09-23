@@ -1,5 +1,6 @@
 package the.david.randomdungeon.dungeon.data;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import the.david.randomdungeon.RandomDungeon;
 
@@ -17,4 +18,5 @@ public class instanceData {
     public static Map<String, Set<Player>> dungeonInstancePlayerSet = new HashMap<>();
     public static Map<String, Set<String>> dungeonInstances = new HashMap<>();
     public static Map<Player, String> playerInDungeon = new HashMap<>();
+    public static Map<Player, Location> playerOriginLocation = new HashMap<>();
 }
