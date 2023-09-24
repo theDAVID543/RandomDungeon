@@ -2,10 +2,12 @@ package the.david.randomdungeon.dungeon;
 
 import org.bukkit.*;
 import the.david.randomdungeon.RandomDungeon;
-import the.david.randomdungeon.dungeon.cacheData.dungeonCacheData;
-import the.david.randomdungeon.handler.config;
+import the.david.randomdungeon.dungeon.holder.Dungeon;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static the.david.randomdungeon.RandomDungeon.dungeonFolder;
 
@@ -13,30 +15,14 @@ public class dungeonManager {
     public dungeonManager(RandomDungeon plugin){
         this.plugin = plugin;
     }
-    RandomDungeon plugin;
+    private RandomDungeon plugin;
+    private static final Map<String, Dungeon> dungeons = new HashMap<>();
 
     public void init(){
-        dungeonCacheData.dungeons.addAll(plugin.dungeonsConfig.getKeys(null));
-        dungeonCacheData.dungeons.forEach(dungeonName ->{
-            dungeonCacheData.dungeonDataConfig.put(dungeonName, new config(plugin, "/data/dungeons/" + dungeonName + ".yml"));
-            config dungeonConfig = dungeonCacheData.dungeonDataConfig.get(dungeonName);
-            dungeonConfig.createCustomConfig();
-            dungeonCacheData.dungeonRoomsPos1.putIfAbsent(dungeonName, new HashMap<>());
-            dungeonCacheData.dungeonRoomsPos2.putIfAbsent(dungeonName, new HashMap<>());
-            if(dungeonConfig.getKeys("Rooms") != null){
-                dungeonConfig.getKeys("Rooms").forEach(roomName ->{
-                    Location pos1 = dungeonConfig.getLocation("Rooms." + roomName + ".pos1");
-                    Location pos2 = dungeonConfig.getLocation("Rooms." + roomName + ".pos2");
-                    dungeonCacheData.dungeonRoomsPos1.get(dungeonName).put(roomName, pos1);
-                    dungeonCacheData.dungeonRoomsPos2.get(dungeonName).put(roomName, pos2);
-                    Bukkit.getLogger().info(roomName);
-                });
-            }
-            Bukkit.getLogger().info(dungeonCacheData.dungeonRoomsPos1.toString());
-        });
+        plugin.dungeonsConfig.getKeys(null).forEach(plugin.dungeonManager::addDungeonWithName);
     }
     public World createDungeon(String showName){
-        if(dungeonCacheData.dungeons.contains(showName)){
+        if(getDungeonNames().contains(showName)){
             Bukkit.getLogger().info("該Dungeon已存在");
             return null;
         }
@@ -48,12 +34,34 @@ public class dungeonManager {
         world.setGameRule(GameRule.KEEP_INVENTORY, true);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         world.setGameRule(GameRule.MOB_GRIEFING, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         Location location = new Location(world, 8, 0, 8);
         location.getBlock().setType(Material.STONE);
         plugin.dungeonsConfig.setObject(showName + ".active", false);
-        dungeonCacheData.dungeons.add(showName);
-        dungeonCacheData.dungeonDataConfig.put(showName, new config(plugin, "/data/dungeons/" + showName + ".yml"));
-        dungeonCacheData.dungeonDataConfig.get(showName).createCustomConfig();
+        addDungeonWithName(showName);
+//        dungeonsHandler.dungeons.add(showName);
+//        dungeonsHandler.dungeonDataConfig.put(showName, new config(plugin, "/data/dungeons/" + showName + ".yml"));
+//        dungeonsHandler.dungeonDataConfig.get(showName).createCustomConfig();
         return world;
+    }
+    public Set<String> getDungeonNames(){
+        return dungeons.keySet();
+    }
+    public Collection<Dungeon> getDungeons(){
+        return dungeons.values();
+    }
+    public Dungeon getDungeonByName(String dungeonName){
+        return dungeons.get(dungeonName);
+    }
+    public void addDungeon(Dungeon dungeon){
+        dungeons.put(dungeon.getShowName(), dungeon);
+    }
+    public void addDungeonWithName(String dungeonName){
+        Dungeon dungeon = new Dungeon(dungeonName);
+        addDungeon(dungeon);
+    }
+    public String toShowName(String fullName){
+        return fullName.replaceAll(dungeonFolder, "");
     }
 }

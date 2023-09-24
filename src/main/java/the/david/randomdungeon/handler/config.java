@@ -6,7 +6,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import the.david.randomdungeon.RandomDungeon;
-import the.david.randomdungeon.dungeon.cacheData.dungeonCacheData;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -90,6 +89,6 @@ public class config {
         double y = dataConfig.getDouble(path + ".Y");
         double z = dataConfig.getDouble(path + ".Z");
         String fileName = dataConfigFile.getName();
-        return new Location(Bukkit.getWorld(dungeonCacheData.toWorldName(fileName.replaceAll(".yml", ""))), x, y, z);
+        return new Location(Bukkit.getWorld(fileName.replaceAll(".yml", "")), x, y, z);
     }
 }

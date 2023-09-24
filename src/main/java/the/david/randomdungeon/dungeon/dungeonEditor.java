@@ -1,12 +1,8 @@
 package the.david.randomdungeon.dungeon;
 
-import com.fastasyncworldedit.core.world.SimpleWorld;
-import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
-import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -14,12 +10,9 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.World;
-import jdk.internal.net.http.common.Pair;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,10 +23,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import the.david.randomdungeon.RandomDungeon;
-import the.david.randomdungeon.dungeon.cacheData.dungeonCacheData;
-import the.david.randomdungeon.handler.config;
+import the.david.randomdungeon.dungeon.holder.Dungeon;
 
-import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,14 +45,14 @@ public class dungeonEditor implements Listener {
         return wand;
     }
     public void editDungeon(Player player, String dungeonName){
-        if(!dungeonCacheData.dungeons.contains(dungeonName)){
+        if(!plugin.dungeonManager.getDungeonNames().contains(dungeonName)){
             return;
         }
-        player.teleport(new Location(Bukkit.getWorld(dungeonCacheData.toWorldName(dungeonName)), 8, 1, 8).toCenterLocation());
+        player.teleport(new Location(plugin.dungeonManager.getDungeonByName(dungeonName).getWorld(), 8, 1, 8).toCenterLocation());
         player.getInventory().addItem(getWandItem());
     }
     public void testCopy(Player player){
-        if(!dungeonCacheData.dungeons.contains(dungeonCacheData.toShowName(player.getWorld().getName()))){
+        if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
             return;
         }
         CuboidRegion region = new CuboidRegion(toBlockVector3(player, playerSelectionPos1), toBlockVector3(player, playerSelectionPos2));
@@ -84,16 +75,14 @@ public class dungeonEditor implements Listener {
         }
     }
     public Boolean storeRoomData(Player player, String roomName){
-        if(playerSelectionPos1.get(player) == null || playerSelectionPos2.get(player) == null || !dungeonCacheData.dungeons.contains(dungeonCacheData.toShowName(player.getWorld().getName()))){
+        if(playerSelectionPos1.get(player) == null || playerSelectionPos2.get(player) == null || !plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
             return false;
         }
         Location pos1 = playerSelectionPos1.get(player);
         Location pos2 = playerSelectionPos2.get(player);
-        String dungeonShowName = dungeonCacheData.toShowName(player.getWorld().getName());
-        dungeonCacheData.dungeonDataConfig.get(dungeonShowName).setLocation("Rooms." + roomName + ".pos1", pos1);
-        dungeonCacheData.dungeonDataConfig.get(dungeonShowName).setLocation("Rooms." + roomName + ".pos2", pos2);
-        dungeonCacheData.dungeonRoomsPos1.get(dungeonShowName).put(roomName, pos1);
-        dungeonCacheData.dungeonRoomsPos2.get(dungeonShowName).put(roomName, pos2);
+        String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
+        Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonShowName);
+        dungeon.addRoomWithName(roomName, pos1, pos2);
         return true;
     }
 
@@ -118,7 +107,7 @@ public class dungeonEditor implements Listener {
 
     @EventHandler
     public void onClickOnBlock(PlayerInteractEvent e){
-        if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta() == null || !e.getPlayer().getInventory().getItemInMainHand().getItemMeta().equals(getWandItem().getItemMeta()) || !dungeonCacheData.dungeons.contains(dungeonCacheData.toShowName(e.getPlayer().getWorld().getName()))){
+        if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta() == null || !e.getPlayer().getInventory().getItemInMainHand().getItemMeta().equals(getWandItem().getItemMeta()) || !plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(e.getPlayer().getWorld().getName()))){
             return;
         }
         if(e.getAction() == Action.LEFT_CLICK_BLOCK){

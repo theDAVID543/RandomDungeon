@@ -1,5 +1,7 @@
 package the.david.randomdungeon.handler;
 
+import org.bukkit.Bukkit;
+import org.codehaus.plexus.util.FileUtils;
 import the.david.randomdungeon.RandomDungeon;
 
 import java.io.*;
@@ -10,8 +12,8 @@ public class dungeonInstanceWorldHandler {
     public dungeonInstanceWorldHandler(RandomDungeon plugin){
         this.plugin = plugin;
     }
-    private RandomDungeon plugin;
-    public void copyWorld(File source, File target){
+    private static RandomDungeon plugin;
+    public static void copyWorld(File source, File target){
         try {
             ArrayList<String> ignore = new ArrayList<>(Arrays.asList("uid.dat", "session.lock"));
             if(!ignore.contains(source.getName())) {
@@ -39,5 +41,15 @@ public class dungeonInstanceWorldHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static void copyDirectory(File sourceFile, File targetFile){
+        try {
+            FileUtils.deleteDirectory(targetFile);
+            FileUtils.copyDirectoryStructure(sourceFile, targetFile);
+        } catch (IOException ignored) {
+
+        }
+        FileUtils.fileDelete(targetFile.getPath() + "\\\\uid.dat");
+        FileUtils.fileDelete(targetFile.getPath() + "\\\\session.lock");
     }
 }
