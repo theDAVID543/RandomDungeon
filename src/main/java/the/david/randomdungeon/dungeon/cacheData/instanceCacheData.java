@@ -1,4 +1,4 @@
-package the.david.randomdungeon.dungeon.data;
+package the.david.randomdungeon.dungeon.cacheData;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class instanceData {
-    public instanceData(RandomDungeon plugin){
+public class instanceCacheData {
+    public instanceCacheData(RandomDungeon plugin){
         this.plugin = plugin;
     }
     private RandomDungeon plugin;

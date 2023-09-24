@@ -25,7 +25,9 @@ public class commands implements CommandExecutor {
         }
         Player player = (Player) sender;
         if(args.length == 1){
-
+            if(args[0].equals("leave")){
+                plugin.dungeonInstanceManager.leaveDungeon(player);
+            }
         }
         if(args.length == 2){
             if(Objects.equals(args[0], "create")){
@@ -43,6 +45,9 @@ public class commands implements CommandExecutor {
             }
             if(Objects.equals(args[0], "play")){
                 plugin.dungeonInstanceManager.playDungeon(player, args[1]);
+            }
+            if(Objects.equals(args[0], "editor")){
+                plugin.dungeonEditor.storeRoomData(player, args[1]);
             }
         }
         return true;

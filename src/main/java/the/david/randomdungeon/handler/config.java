@@ -1,9 +1,12 @@
 package the.david.randomdungeon.handler;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import the.david.randomdungeon.RandomDungeon;
+import the.david.randomdungeon.dungeon.cacheData.dungeonCacheData;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -56,14 +59,37 @@ public class config {
             throw new RuntimeException(e);
         }
     }
+    public void setLocation(String path, Location location){
+        double x = location.getX();
+        double y = location.getY();
+        double z = location.getZ();
+        dataConfig.set(path + ".X", x);
+        dataConfig.set(path + ".Y", y);
+        dataConfig.set(path + ".Z", z);
+        try {
+            dataConfig.save(dataConfigFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public String getString(String path){
         return dataConfig.getString(path);
     }
     public Set<String> getKeys(@Nullable String path){
         if(path != null){
-            return dataConfig.createSection(path).getKeys(false);
+            if(dataConfig.getConfigurationSection(path) == null){
+                return null;
+            }
+            return dataConfig.getConfigurationSection(path).getKeys(false);
         }else{
             return dataConfig.getKeys(false);
         }
+    }
+    public Location getLocation(String path){
+        double x = dataConfig.getDouble(path + ".X");
+        double y = dataConfig.getDouble(path + ".Y");
+        double z = dataConfig.getDouble(path + ".Z");
+        String fileName = dataConfigFile.getName();
+        return new Location(Bukkit.getWorld(dungeonCacheData.toWorldName(fileName.replaceAll(".yml", ""))), x, y, z);
     }
 }

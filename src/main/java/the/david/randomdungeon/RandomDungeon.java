@@ -3,12 +3,12 @@ package the.david.randomdungeon;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import the.david.randomdungeon.command.commands;
-import the.david.randomdungeon.dungeon.data.instanceData;
+import the.david.randomdungeon.dungeon.cacheData.instanceCacheData;
 import the.david.randomdungeon.dungeon.dungeonInstanceManager;
 import the.david.randomdungeon.dungeon.dungeonEditor;
 import the.david.randomdungeon.handler.config;
 import the.david.randomdungeon.dungeon.dungeonManager;
-import the.david.randomdungeon.dungeon.data.dungeonData;
+import the.david.randomdungeon.dungeon.cacheData.dungeonCacheData;
 import the.david.randomdungeon.handler.dungeonInstanceWorldHandler;
 
 public final class RandomDungeon extends JavaPlugin {
@@ -18,13 +18,15 @@ public final class RandomDungeon extends JavaPlugin {
     public dungeonInstanceManager dungeonInstanceManager;
     public dungeonInstanceWorldHandler dungeonInstanceWorldHandler;
     public dungeonEditor dungeonEditor;
-    public dungeonData dungeonData;
-    public instanceData instanceData;
+    public dungeonCacheData dungeonCacheData;
+    public instanceCacheData instanceCacheData;
+    public static String dungeonFolder;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         instance = this;
+        dungeonFolder = instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonMaps/";
         Bukkit.getPluginCommand("randomdungeon").setExecutor(new commands(this));
         dungeonsConfig = new config(this, "data/dungeons.yml");
         dungeonsConfig.createCustomConfig();
@@ -33,8 +35,9 @@ public final class RandomDungeon extends JavaPlugin {
         dungeonInstanceManager = new dungeonInstanceManager(this);
         dungeonInstanceWorldHandler = new dungeonInstanceWorldHandler(this);
         dungeonEditor = new dungeonEditor(this);
-        dungeonData = new dungeonData(this);
-        instanceData = new instanceData(this);
+        dungeonCacheData = new dungeonCacheData(this);
+        instanceCacheData = new instanceCacheData(this);
+        Bukkit.getPluginManager().registerEvents(dungeonEditor, this);
     }
 
     @Override
