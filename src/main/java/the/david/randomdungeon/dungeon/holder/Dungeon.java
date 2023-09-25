@@ -69,8 +69,7 @@ public class Dungeon {
         getConfig().setLocation( "Rooms." + roomName + ".Pos2", pos2);
     }
     public void loadWorld(){
-        World world = new WorldCreator(getWorldName()).createWorld();
-        dungeonWorld = world;
+        dungeonWorld = new WorldCreator(getWorldName()).createWorld();
     }
     public void removeRoom(String roomName){
         Room room = rooms.get(roomName);

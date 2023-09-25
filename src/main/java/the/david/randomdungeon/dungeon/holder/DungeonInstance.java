@@ -25,9 +25,9 @@ public class DungeonInstance {
     }
     private final String dungeonShowName;
     private final Set<Player> players = new HashSet<>();
-    private Integer instanceNumber;
-    private String instanceName;
-    private World world;
+    private final Integer instanceNumber;
+    private final String instanceName;
+    private final World world;
     public World getWorld(){
         return world;
     }

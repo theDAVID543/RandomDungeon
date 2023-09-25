@@ -1,6 +1,5 @@
 package the.david.randomdungeon.handler;
 
-import org.bukkit.Bukkit;
 import org.codehaus.plexus.util.FileUtils;
 import the.david.randomdungeon.RandomDungeon;
 

@@ -3,10 +3,10 @@ package the.david.randomdungeon;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import the.david.randomdungeon.command.commands;
-import the.david.randomdungeon.dungeon.dungeonInstanceManager;
 import the.david.randomdungeon.dungeon.dungeonEditor;
-import the.david.randomdungeon.handler.config;
+import the.david.randomdungeon.dungeon.dungeonInstanceManager;
 import the.david.randomdungeon.dungeon.dungeonManager;
+import the.david.randomdungeon.handler.config;
 import the.david.randomdungeon.handler.dungeonInstanceWorldHandler;
 
 public final class RandomDungeon extends JavaPlugin {
