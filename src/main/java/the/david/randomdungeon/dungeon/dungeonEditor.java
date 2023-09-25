@@ -48,7 +48,9 @@ public class dungeonEditor implements Listener {
         if(!plugin.dungeonManager.getDungeonNames().contains(dungeonName)){
             return;
         }
-        player.teleport(new Location(plugin.dungeonManager.getDungeonByName(dungeonName).getWorld(), 8, 1, 8).toCenterLocation());
+        Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonName);
+        dungeon.loadWorld();
+        player.teleport(new Location(dungeon.getWorld(), 8, 1, 8).toCenterLocation());
         player.getInventory().addItem(getWandItem());
     }
     public void testCopy(Player player){
@@ -74,7 +76,7 @@ public class dungeonEditor implements Listener {
             Operations.complete(operation);
         }
     }
-    public Boolean storeRoomData(Player player, String roomName){
+    public Boolean addRoom(Player player, String roomName){
         if(playerSelectionPos1.get(player) == null || playerSelectionPos2.get(player) == null || !plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
             return false;
         }
@@ -83,6 +85,18 @@ public class dungeonEditor implements Listener {
         String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
         Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonShowName);
         dungeon.addRoomWithName(roomName, pos1, pos2);
+        return true;
+    }
+    public Boolean removeRoom(Player player, String roomName){
+        if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
+            return false;
+        }
+        String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
+        Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonShowName);
+        if(dungeon.getRoomByName(roomName) == null){
+            return false;
+        }
+        dungeon.removeRoom(roomName);
         return true;
     }
 

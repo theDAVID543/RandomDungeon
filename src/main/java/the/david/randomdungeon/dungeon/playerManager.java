@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class playerManager {
-    private static Map<Player, RDPlayer> rdPlayers = new HashMap<>();
+    private static final Map<Player, RDPlayer> rdPlayers = new HashMap<>();
     public static RDPlayer getRDPlayer(Player player){
         return rdPlayers.get(player);
     }

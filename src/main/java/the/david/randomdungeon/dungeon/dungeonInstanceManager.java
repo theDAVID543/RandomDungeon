@@ -57,6 +57,9 @@ public class dungeonInstanceManager {
     }
     public void leaveDungeon(Player player){
         RDPlayer rdPlayer = playerManager.getRDPlayer(player);
+        if(rdPlayer == null){
+            return;
+        }
         if(rdPlayer.getOriginLocation() == null){
             return;
         }
@@ -93,18 +96,25 @@ public class dungeonInstanceManager {
         return true;
     }
     public void deleteInstances(){
-        plugin.dungeonManager.getDungeons().forEach(v -> v.getInstances().forEach(j ->{
-            World world = v.getWorld();
-            if(world != null){
-                File worldFile = world.getWorldFolder();
-                Bukkit.unloadWorld(world, false);
-                try {
-                    FileUtils.forceDelete(worldFile);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+        if(plugin.dungeonManager.getDungeons() == null){
+            return;
+        }
+        plugin.dungeonManager.getDungeons().forEach(v -> {
+            if(v.getInstances() != null){
+                v.getInstances().forEach(j ->{
+                    World world = j.getWorld();
+                    if(world != null){
+                        File worldFile = world.getWorldFolder();
+                        Bukkit.unloadWorld(world, false);
+                        try {
+                            FileUtils.forceDelete(worldFile);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
             }
-        }));
+        });
     }
 
 }

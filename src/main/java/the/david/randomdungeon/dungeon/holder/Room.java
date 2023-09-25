@@ -4,12 +4,15 @@ package the.david.randomdungeon.dungeon.holder;
 import org.bukkit.Location;
 
 public class Room {
-    public Room(String roomName, Location pos1, Location pos2){
+    public Room(String roomName, Location pos1, Location pos2, Dungeon dungeon){
         this.roomName = roomName;
         this.pos1 = pos1;
         this.pos2 = pos2;
+        this.dungeon = dungeon;
+        configPath = "Rooms." + roomName;
     }
-    private String roomName;
+    private final Dungeon dungeon;
+    private final String roomName;
     private Location pos1;
     private Location pos2;
     private Boolean doorEast;
@@ -17,6 +20,7 @@ public class Room {
     private Boolean doorNorth;
     private Boolean doorSouth;
     private Boolean canRotate;
+    private final String configPath;
 
     public void setDoorDirection(String direction){
         if(direction.toUpperCase().contains("E")){
@@ -62,5 +66,9 @@ public class Room {
     }
     public String getRoomName(){
         return roomName;
+    }
+    public void remove(){
+//        dungeon.getConfig().setObject(configPath, null);
+        dungeon.getConfig().removeKey(configPath);
     }
 }

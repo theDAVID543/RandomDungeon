@@ -71,6 +71,15 @@ public class config {
             throw new RuntimeException(e);
         }
     }
+    public void removeKey(String path){
+        dataConfig.getConfigurationSection(path).getKeys(true).forEach(v -> dataConfig.getConfigurationSection(path).set(v, null));
+        dataConfig.set(path, null);
+        try {
+            dataConfig.save(dataConfigFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public String getString(String path){
         return dataConfig.getString(path);
     }

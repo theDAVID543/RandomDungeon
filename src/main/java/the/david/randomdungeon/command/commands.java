@@ -28,8 +28,7 @@ public class commands implements CommandExecutor {
             if(args[0].equals("leave")){
                 plugin.dungeonInstanceManager.leaveDungeon(player);
             }
-        }
-        if(args.length == 2){
+        }else if(args.length == 2){
             if(Objects.equals(args[0], "create")){
                 World world = plugin.dungeonManager.createDungeon(args[1]);
                 if(world!=null){
@@ -46,10 +45,24 @@ public class commands implements CommandExecutor {
             if(Objects.equals(args[0], "play")){
                 plugin.dungeonInstanceManager.playDungeon(player, args[1]);
             }
+        }else if(args.length == 3){
             if(Objects.equals(args[0], "editor")){
-                plugin.dungeonEditor.storeRoomData(player, args[1]);
+                if(Objects.equals(args[1], "addroom")){
+                    if(!plugin.dungeonEditor.addRoom(player, args[2])){
+                        player.sendMessage(
+                                Component.text("無法新增Room").color(NamedTextColor.RED)
+                        );
+                    }
+                }
+                if(Objects.equals(args[1], "removeeroom")){
+                    if(!plugin.dungeonEditor.removeRoom(player, args[2])){
+                        player.sendMessage(
+                                Component.text("無法刪除Room").color(NamedTextColor.RED)
+                        );
+                    }
+                }
             }
         }
-        return true;
+        return false;
     }
 }
