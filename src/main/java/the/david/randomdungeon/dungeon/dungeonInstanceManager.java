@@ -93,7 +93,18 @@ public class dungeonInstanceManager {
         return true;
     }
     public void deleteInstances(){
-        plugin.dungeonManager.getDungeons().forEach(v -> v.getInstances().forEach(this::deleteInstanceWorld));
+        plugin.dungeonManager.getDungeons().forEach(v -> v.getInstances().forEach(j ->{
+            World world = v.getWorld();
+            if(world != null){
+                File worldFile = world.getWorldFolder();
+                Bukkit.unloadWorld(world, false);
+                try {
+                    FileUtils.forceDelete(worldFile);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }));
     }
 
 }
