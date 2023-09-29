@@ -23,6 +23,8 @@ public class Room {
         if(!dungeon.getConfig().hasKey(configPath)){
             return false;
         }
+        pos1 = dungeon.getConfig().getLocation(configPath + ".Pos1");
+        pos2 = dungeon.getConfig().getLocation(configPath + ".Pos2");
         doorEast = dungeon.getConfig().getBoolean(configPath + ".doorEast");
         doorWest = dungeon.getConfig().getBoolean(configPath + ".doorWest");
         doorNorth = dungeon.getConfig().getBoolean(configPath + ".doorNorth");
@@ -68,13 +70,6 @@ public class Room {
     }
     public Boolean getCanRotate(){
         return canRotate;
-    }
-
-    public void setPos1(Location location){
-        pos1 = location;
-    }
-    public void setPos2(Location location){
-        pos2 = location;
     }
     public Location getPos1(){
         return pos1;

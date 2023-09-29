@@ -21,6 +21,7 @@ public class Dungeon {
         if(dungeonDataConfig.getKeys("Rooms") != null){
             dungeonDataConfig.getKeys("Rooms").forEach(v ->{
                 Room room = new Room(v, dungeonDataConfig.getLocation("Rooms." + v + ".Pos1"), dungeonDataConfig.getLocation("Rooms." + v + ".Pos2"), this);
+                room.loadSettings();
                 addRoom(room);
             });
         }
