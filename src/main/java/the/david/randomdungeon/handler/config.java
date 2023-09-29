@@ -101,6 +101,13 @@ public class config {
             return dataConfig.getKeys(false);
         }
     }
+    public Integer getInteger(String path){
+        if(hasKey(path)){
+            return dataConfig.getInt(path);
+        }else{
+            return null;
+        }
+    }
     public Location getLocation(String path){
         double x = dataConfig.getDouble(path + ".X");
         double y = dataConfig.getDouble(path + ".Y");

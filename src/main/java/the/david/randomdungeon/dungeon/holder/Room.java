@@ -19,9 +19,9 @@ public class Room {
         dungeon.getConfig().setObject(configPath + ".doorNorth", false);
         dungeon.getConfig().setObject(configPath + ".doorSouth", false);
     }
-    public Boolean loadSettings(){
+    public void loadSettings(){
         if(!dungeon.getConfig().hasKey(configPath)){
-            return false;
+            return;
         }
         pos1 = dungeon.getConfig().getLocation(configPath + ".Pos1");
         pos2 = dungeon.getConfig().getLocation(configPath + ".Pos2");
@@ -29,7 +29,6 @@ public class Room {
         doorWest = dungeon.getConfig().getBoolean(configPath + ".doorWest");
         doorNorth = dungeon.getConfig().getBoolean(configPath + ".doorNorth");
         doorSouth = dungeon.getConfig().getBoolean(configPath + ".doorSouth");
-        return true;
     }
     private final Dungeon dungeon;
     private final String roomName;
