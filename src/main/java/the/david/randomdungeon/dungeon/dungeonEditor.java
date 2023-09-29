@@ -10,6 +10,7 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -96,6 +97,15 @@ public class dungeonEditor implements Listener {
             return false;
         }
         dungeon.removeRoom(roomName);
+        return true;
+    }
+    public Boolean setDoorDirections(Player player, String room, String directions){
+        if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
+            return false;
+        }
+        String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
+        Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonShowName);
+        dungeon.getRoomByName(room).setDoorDirection(directions);
         return true;
     }
 

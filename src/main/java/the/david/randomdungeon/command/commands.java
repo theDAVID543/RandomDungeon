@@ -71,6 +71,18 @@ public class commands implements CommandExecutor {
                     }
                 }
             }
+        }else if(args.length == 5){
+            if(Objects.equals(args[0], "editor")) {
+                if (Objects.equals(args[1], "room")) {
+                    if(Objects.equals(args[2], "doors")){
+                        if(!plugin.dungeonEditor.setDoorDirections(player, args[3], args[4])){
+                            player.sendMessage(
+                                    Component.text("無法設定door方向").color(NamedTextColor.RED)
+                            );
+                        }
+                    }
+                }
+            }
         }
         return false;
     }

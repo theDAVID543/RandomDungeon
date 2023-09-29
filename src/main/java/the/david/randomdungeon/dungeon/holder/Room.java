@@ -42,18 +42,14 @@ public class Room {
     private final String configPath;
 
     public void setDoorDirection(String direction){
-        if(direction.toUpperCase().contains("E")){
-            doorEast = true;
-        }
-        if(direction.toUpperCase().contains("W")){
-            doorWest = true;
-        }
-        if(direction.toUpperCase().contains("N")){
-            doorNorth = true;
-        }
-        if(direction.toUpperCase().contains("S")){
-            doorSouth = true;
-        }
+        doorEast = direction.toUpperCase().contains("E");
+        doorWest = direction.toUpperCase().contains("W");
+        doorNorth = direction.toUpperCase().contains("N");
+        doorSouth = direction.toUpperCase().contains("S");
+        dungeon.getConfig().setObject(configPath + ".doorEast", doorEast);
+        dungeon.getConfig().setObject(configPath + ".doorWest", doorWest);
+        dungeon.getConfig().setObject(configPath + ".doorNorth", doorNorth);
+        dungeon.getConfig().setObject(configPath + ".doorSouth", doorSouth);
     }
     public Boolean getDoorEast(){
         return doorEast;
