@@ -1,5 +1,6 @@
 package the.david.randomdungeon.handler;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -78,6 +79,13 @@ public class config {
             dataConfig.save(dataConfigFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    public Boolean hasKey(String path){
+        if(dataConfig.contains(path)){
+            return true;
+        }else{
+            return false;
         }
     }
     public String getString(String path){

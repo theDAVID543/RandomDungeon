@@ -84,7 +84,7 @@ public class dungeonEditor implements Listener {
         Location pos2 = playerSelectionPos2.get(player);
         String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
         Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonShowName);
-        dungeon.addRoomWithName(roomName, pos1, pos2);
+        dungeon.createRoomWithName(roomName, pos1, pos2);
         return true;
     }
     public Boolean removeRoom(Player player, String roomName){

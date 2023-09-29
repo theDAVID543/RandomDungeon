@@ -6,6 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.codehaus.plexus.util.FileUtils;
 import the.david.randomdungeon.RandomDungeon;
@@ -16,7 +19,7 @@ import the.david.randomdungeon.dungeon.holder.RDPlayer;
 import java.io.File;
 import java.io.IOException;
 
-public class dungeonInstanceManager {
+public class dungeonInstanceManager implements Listener {
     public dungeonInstanceManager(RandomDungeon plugin){
         this.plugin = plugin;
     }
@@ -45,11 +48,9 @@ public class dungeonInstanceManager {
         if(rdPlayer.getOriginLocation() == null){
             return;
         }
+        playerManager.removeRDPlayer(player);
         DungeonInstance dungeonInstance = rdPlayer.getPlayingDungeonInstance();
-        dungeonInstance.getPlayers().remove(player);
-        rdPlayer.setPlayingDungeonInstance(null);
         player.teleport(rdPlayer.getOriginLocation());
-        rdPlayer.setOriginLocation(null);
         if(deleteEmpty){
             deleteEmptyInstance(dungeonInstance);
         }
@@ -109,5 +110,13 @@ public class dungeonInstanceManager {
             leaveDungeon(v, false);
         });
     }
-
+    @EventHandler
+    public void onPlayerQuitServer(PlayerQuitEvent e){
+        Player player = e.getPlayer();
+        RDPlayer rdPlayer = playerManager.getRDPlayer(player);
+        if(rdPlayer == null){
+            return;
+        }
+        leaveDungeon(player, true);
+    }
 }

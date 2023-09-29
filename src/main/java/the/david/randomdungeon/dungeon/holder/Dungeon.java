@@ -62,11 +62,10 @@ public class Dungeon {
     public void addRoom(Room room){
         rooms.put(room.getRoomName(), room);
     }
-    public void addRoomWithName(String roomName, Location pos1, Location pos2){
+    public void createRoomWithName(String roomName, Location pos1, Location pos2){
         Room room = new Room(roomName, pos1, pos2, this);
         addRoom(room);
-        getConfig().setLocation( "Rooms." + roomName + ".Pos1", pos1);
-        getConfig().setLocation( "Rooms." + roomName + ".Pos2", pos2);
+        room.setDefaultConfigs();
     }
     public void loadWorld(){
         dungeonWorld = new WorldCreator(getWorldName()).createWorld();

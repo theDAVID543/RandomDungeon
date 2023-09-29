@@ -16,4 +16,7 @@ public class playerManager {
         rdPlayers.put(player, rdPlayer);
         return rdPlayer;
     }
+    public static void removeRDPlayer(Player player){
+        rdPlayers.remove(player);
+    }
 }
