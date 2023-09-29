@@ -7,6 +7,7 @@ import the.david.randomdungeon.handler.dungeonInstanceWorldHandler;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static the.david.randomdungeon.RandomDungeon.plugin;
@@ -24,20 +25,20 @@ public class DungeonInstance {
         world = worldCreator.createWorld();
     }
     private final String dungeonShowName;
-    private final Set<Player> players = new HashSet<>();
+//    private final Set<Player> players = new HashSet<>();
     private final Integer instanceNumber;
     private final String instanceName;
     private final World world;
     public World getWorld(){
         return world;
     }
-    public Set<Player> getPlayers(){
-        return players;
+    public List<Player> getPlayers(){
+        return world.getPlayers();
     }
-    public void addPlayer(Player player){
-        players.add(player);
-    }
-    public void removePlayer(Player player){
-        players.remove(player);
-    }
+//    public void addPlayer(Player player){
+//        players.add(player);
+//    }
+//    public void removePlayer(Player player){
+//        players.remove(player);
+//    }
 }

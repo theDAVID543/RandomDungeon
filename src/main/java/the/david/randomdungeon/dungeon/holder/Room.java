@@ -11,14 +11,23 @@ public class Room {
         this.dungeon = dungeon;
         configPath = "Rooms." + roomName;
     }
+    public void setDefaults(){
+        if(dungeon.getConfig().getBoolean(configPath + ".doorEast") == null){
+
+        }
+        dungeon.getConfig().setObject(configPath + ".doorEast", false);
+        dungeon.getConfig().setObject(configPath + ".doorWest", false);
+        dungeon.getConfig().setObject(configPath + ".doorNorth", false);
+        dungeon.getConfig().setObject(configPath + ".doorSouth", false);
+    }
     private final Dungeon dungeon;
     private final String roomName;
     private Location pos1;
     private Location pos2;
-    private Boolean doorEast;
-    private Boolean doorWest;
-    private Boolean doorNorth;
-    private Boolean doorSouth;
+    private Boolean doorEast = false;
+    private Boolean doorWest = false;
+    private Boolean doorNorth = false;
+    private Boolean doorSouth = false;
     private Boolean canRotate;
     private final String configPath;
 

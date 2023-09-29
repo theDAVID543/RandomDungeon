@@ -100,4 +100,7 @@ public class config {
         String fileName = dataConfigFile.getName();
         return new Location(Bukkit.getWorld(fileName.replaceAll(".yml", "")), x, y, z);
     }
+    public Boolean getBoolean(String path){
+        return dataConfig.getBoolean(path);
+    }
 }

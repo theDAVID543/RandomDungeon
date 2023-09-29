@@ -26,13 +26,16 @@ public class commands implements CommandExecutor {
         Player player = (Player) sender;
         if(args.length == 1){
             if(args[0].equals("leave")){
-                plugin.dungeonInstanceManager.leaveDungeon(player);
+                plugin.dungeonInstanceManager.leaveDungeon(player, true);
             }
         }else if(args.length == 2){
             if(Objects.equals(args[0], "create")){
                 World world = plugin.dungeonManager.createDungeon(args[1]);
                 if(world!=null){
-                    player.teleport(new Location(world, 8, 1, 8).toCenterLocation());
+//                    player.teleport(new Location(world, 8, 1, 8).toCenterLocation());
+                    player.sendMessage(
+                            Component.text("created Dungeon").color(NamedTextColor.RED)
+                    );
                 }else{
                     player.sendMessage(
                             Component.text("無法創建Dungeon").color(NamedTextColor.RED)
@@ -47,18 +50,24 @@ public class commands implements CommandExecutor {
             }
         }else if(args.length == 3){
             if(Objects.equals(args[0], "editor")){
-                if(Objects.equals(args[1], "addroom")){
-                    if(!plugin.dungeonEditor.addRoom(player, args[2])){
-                        player.sendMessage(
-                                Component.text("無法新增Room").color(NamedTextColor.RED)
-                        );
+
+            }
+        }else if(args.length == 4){
+            if(Objects.equals(args[0], "editor")){
+                if(Objects.equals(args[1], "room")){
+                    if(Objects.equals(args[2], "add")){
+                        if(!plugin.dungeonEditor.addRoom(player, args[3])){
+                            player.sendMessage(
+                                    Component.text("無法新增Room").color(NamedTextColor.RED)
+                            );
+                        }
                     }
-                }
-                if(Objects.equals(args[1], "removeeroom")){
-                    if(!plugin.dungeonEditor.removeRoom(player, args[2])){
-                        player.sendMessage(
-                                Component.text("無法刪除Room").color(NamedTextColor.RED)
-                        );
+                    if(Objects.equals(args[2], "remove")){
+                        if(!plugin.dungeonEditor.removeRoom(player, args[3])){
+                            player.sendMessage(
+                                    Component.text("無法刪除Room").color(NamedTextColor.RED)
+                            );
+                        }
                     }
                 }
             }

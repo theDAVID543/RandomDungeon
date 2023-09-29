@@ -30,32 +30,14 @@ public class dungeonInstanceManager {
         }
         Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonName);
         DungeonInstance dungeonInstance = dungeon.createInstance();
-        dungeonInstance.addPlayer(player);
 
         RDPlayer rdPlayer = playerManager.addRDPlayer(player);
         rdPlayer.setOriginLocation(player.getLocation());
         rdPlayer.setPlayingDungeon(dungeon);
         rdPlayer.setPlayingDungeonInstance(dungeonInstance);
         player.teleport(new Location(dungeonInstance.getWorld(), 8, 1, 8).toCenterLocation());
-
-//        instancesHandler.playerOriginLocation.put(player, player.getLocation());
-//
-//        instancesHandler.dungeonInstanceAmount.putIfAbsent(dungeonName, 0);
-//        String instanceName = plugin.instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonInstances/" + dungeonName + "_" + instancesHandler.dungeonInstanceAmount.get(dungeonName);
-//        instancesHandler.dungeonInstanceAmount.put(dungeonName, instancesHandler.dungeonInstanceAmount.get(dungeonName) + 1);
-//        plugin.dungeonManager.getDungeonByName(dungeonName).getWorld().save();
-//        File dungeonFile = plugin.dungeonManager.getDungeonByName(dungeonName).getWorld().getWorldFolder();
-//        plugin.dungeonInstanceWorldHandler.copyWorld(dungeonFile, new File(instanceName));
-//        WorldCreator worldCreator = new WorldCreator(instanceName);
-//        World world = worldCreator.createWorld();
-//        player.teleport(new Location(world, 8, 1, 8).toCenterLocation());
-//        instancesHandler.dungeonInstancePlayerSet.putIfAbsent(instanceName, new HashSet<>());
-//        instancesHandler.dungeonInstancePlayerSet.get(instanceName).add(player);
-//        instancesHandler.dungeonInstances.putIfAbsent(dungeonName, new HashSet<>());
-//        instancesHandler.dungeonInstances.get(dungeonName).add(instanceName);
-//        instancesHandler.playerInDungeon.put(player, instanceName);
     }
-    public void leaveDungeon(Player player){
+    public void leaveDungeon(Player player, Boolean deleteEmpty){
         RDPlayer rdPlayer = playerManager.getRDPlayer(player);
         if(rdPlayer == null){
             return;
@@ -68,7 +50,9 @@ public class dungeonInstanceManager {
         rdPlayer.setPlayingDungeonInstance(null);
         player.teleport(rdPlayer.getOriginLocation());
         rdPlayer.setOriginLocation(null);
-        deleteEmptyInstance(dungeonInstance);
+        if(deleteEmpty){
+            deleteEmptyInstance(dungeonInstance);
+        }
     }
     public void deleteEmptyInstance(DungeonInstance dungeonInstance){
         if(dungeonInstance.getPlayers().isEmpty()){
@@ -96,12 +80,13 @@ public class dungeonInstanceManager {
         return true;
     }
     public void deleteInstances(){
-        if(plugin.dungeonManager.getDungeons() == null){
+        if(plugin.dungeonManager.getDungeons().isEmpty()){
             return;
         }
         plugin.dungeonManager.getDungeons().forEach(v -> {
-            if(v.getInstances() != null){
+            if(!v.getInstances().isEmpty()){
                 v.getInstances().forEach(j ->{
+                    evacuatePlayers(j);
                     World world = j.getWorld();
                     if(world != null){
                         File worldFile = world.getWorldFolder();
@@ -114,6 +99,14 @@ public class dungeonInstanceManager {
                     }
                 });
             }
+        });
+    }
+    public void evacuatePlayers(DungeonInstance dungeonInstance){
+        if(dungeonInstance == null){
+            return;
+        }
+        dungeonInstance.getPlayers().forEach(v ->{
+            leaveDungeon(v, false);
         });
     }
 
