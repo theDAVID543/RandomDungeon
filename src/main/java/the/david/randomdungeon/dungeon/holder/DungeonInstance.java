@@ -14,17 +14,17 @@ import static the.david.randomdungeon.RandomDungeon.plugin;
 
 
 public class DungeonInstance {
-    public DungeonInstance(String dungeonShowName, Integer instanceNumber){
-        this.dungeonShowName = dungeonShowName;
+    public DungeonInstance(Dungeon dungeon, Integer instanceNumber){
+        this.dungeon = dungeon;
         this.instanceNumber = instanceNumber;
-        instanceName = plugin.instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonInstances/" + dungeonShowName + "_" + instanceNumber;
-        File dungeonFile = plugin.dungeonManager.getDungeonByName(dungeonShowName).getWorld().getWorldFolder();
+        instanceName = plugin.instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonInstances/" + dungeon.getShowName() + "_" + instanceNumber;
+        File dungeonFile = plugin.dungeonManager.getDungeonByName(dungeon.getShowName()).getWorld().getWorldFolder();
 //        dungeonInstanceWorldHandler.copyWorld(dungeonFile, new File(instanceName));
         dungeonInstanceWorldHandler.copyDirectory(dungeonFile, new File(instanceName));
         WorldCreator worldCreator = new WorldCreator(instanceName);
         world = worldCreator.createWorld();
     }
-    private final String dungeonShowName;
+    private final Dungeon dungeon;
 //    private final Set<Player> players = new HashSet<>();
     private final Integer instanceNumber;
     private final String instanceName;
@@ -34,6 +34,9 @@ public class DungeonInstance {
     }
     public List<Player> getPlayers(){
         return world.getPlayers();
+    }
+    public Dungeon getDungeon(){
+        return dungeon;
     }
 //    public void addPlayer(Player player){
 //        players.add(player);

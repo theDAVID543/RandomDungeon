@@ -37,7 +37,7 @@ public class Dungeon {
     private Integer roomSize;
     public DungeonInstance createInstance(){
         Bukkit.unloadWorld(getWorld(), true);
-        DungeonInstance instance = new DungeonInstance(getShowName(), instanceAmount);
+        DungeonInstance instance = new DungeonInstance(this, instanceAmount);
         instanceAmount += 1;
         instances.add(instance);
         return instance;
