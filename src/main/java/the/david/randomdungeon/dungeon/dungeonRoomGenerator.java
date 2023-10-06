@@ -1,5 +1,7 @@
 package the.david.randomdungeon.dungeon;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import the.david.randomdungeon.RandomDungeon;
 import the.david.randomdungeon.dungeon.holder.*;
 
@@ -20,53 +22,49 @@ public class dungeonRoomGenerator {
         roomInstances.put(new Vector2(0,0), firstRoomInstance);
         Vector2 positionNow = new Vector2(0,0);
         for(int i = 0; i < pathRoomAmount; i++){
-            roomInstances.get(positionNow);
+            Set<String> checkedDirection = new HashSet<>();
+            RoomInstance checkingRoomInstance = new RoomInstance(getRandomElement(rooms).get());
+            String checkingDirection;
+            for(int j = 0; j < 4; j++){
+                checkingDirection = randomDirection(checkingRoomInstance, checkedDirection);
+                if (checkingDirection == null) {
+                    break;
+                }
+                if (checkCanGenerate(positionNow, roomInstances, checkingDirection)) {
+
+                }
+            }
         }
     }
-    public String randomDirection(RoomInstance roomInstance){
+    public String randomDirection(RoomInstance roomInstance, Set<String> ignoreDirection){
         Collection<String> doorDirections = new ArrayList<>();
-        if(roomInstance.getDoorEast()){
+        if(roomInstance.getDoorEast() && !ignoreDirection.contains("east")){
             doorDirections.add("east");
         }
-        if(roomInstance.getDoorWest()){
+        if(roomInstance.getDoorWest() && !ignoreDirection.contains("west")){
             doorDirections.add("west");
         }
-        if(roomInstance.getDoorSouth()){
+        if(roomInstance.getDoorSouth() && !ignoreDirection.contains("south")){
             doorDirections.add("south");
         }
-        if(roomInstance.getDoorNorth()){
+        if(roomInstance.getDoorNorth() && !ignoreDirection.contains("north")){
             doorDirections.add("north");
         }
         Optional<String> result = getRandomElement(doorDirections);
         return result.orElse(null);
     }
-    public Boolean checkCanGenerate(Vector2 positionNow, Map<Vector2, RoomInstance> roomInstances, String direction){
-        if(direction.equals("east")){
-            if(roomInstances.get(new Vector2(positionNow.getX() + 1, positionNow.getY())) != null){
-                return true;
-            }else{
-                return false;
-            }
-        }else if(direction.equals("west")){
-            if(roomInstances.get(new Vector2(positionNow.getX() - 1, positionNow.getY())) != null){
-                return true;
-            }else{
-                return false;
-            }
-        }else if(direction.equals("south")){
-            if(roomInstances.get(new Vector2(positionNow.getX(), positionNow.getY() - 1)) != null){
-                return true;
-            }else{
-                return false;
-            }
-        }else if(direction.equals("north")){
-            if(roomInstances.get(new Vector2(positionNow.getX(), positionNow.getY() + 1)) != null){
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return null;
+    public Boolean checkCanGenerate(Vector2 positionNow, Map<Vector2, RoomInstance> roomInstances, @NotNull String direction){
+        switch (direction) {
+            case "east":
+                return roomInstances.get(new Vector2(positionNow.getX() + 1, positionNow.getY())) != null;
+            case "west":
+                return roomInstances.get(new Vector2(positionNow.getX() - 1, positionNow.getY())) != null;
+            case "south":
+                return roomInstances.get(new Vector2(positionNow.getX(), positionNow.getY() - 1)) != null;
+            case "north":
+                return roomInstances.get(new Vector2(positionNow.getX(), positionNow.getY() + 1)) != null;
+            default:
+                return null;
         }
     }
     public <E> Optional<E> getRandomElement(Collection<E> e) {
