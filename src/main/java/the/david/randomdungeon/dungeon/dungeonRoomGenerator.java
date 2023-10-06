@@ -112,7 +112,7 @@ public class dungeonRoomGenerator {
                 outOneLine.append(String.format("%2d", abs(x)));
                 for (int y = -20; y < 21; y++) {
                     if (roomInstances.get(new Vector2(x, y)) == null) {
-                        outOneLine.append(String.format("%2s", "╳"));
+                        outOneLine.append(String.format("%2s", " "));
                     } else {
                         outOneLine.append(String.format("%2s", getRoomShowSymbol(roomInstances.get(new Vector2(x, y)))));
                     }
