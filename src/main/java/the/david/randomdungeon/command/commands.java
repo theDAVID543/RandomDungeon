@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import the.david.randomdungeon.RandomDungeon;
+import the.david.randomdungeon.dungeon.playerManager;
 
 import java.util.Objects;
 
@@ -50,7 +51,7 @@ public class commands implements CommandExecutor {
             }
         }else if(args.length == 3){
             if(Objects.equals(args[0], "editor")){
-
+                plugin.dungeonRoomGenerator.generateRoomMap(playerManager.getRDPlayer(player).getPlayingDungeonInstance(), 30);
             }
         }else if(args.length == 4){
             if(Objects.equals(args[0], "editor")){
