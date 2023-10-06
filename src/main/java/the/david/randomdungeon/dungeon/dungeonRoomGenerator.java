@@ -1,12 +1,10 @@
 package the.david.randomdungeon.dungeon;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import the.david.randomdungeon.RandomDungeon;
 import the.david.randomdungeon.dungeon.holder.*;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class dungeonRoomGenerator {
     public dungeonRoomGenerator(RandomDungeon plugin){
@@ -21,19 +19,27 @@ public class dungeonRoomGenerator {
         RoomInstance firstRoomInstance = new RoomInstance(getRandomElement(rooms).get());
         roomInstances.put(new Vector2(0,0), firstRoomInstance);
         Vector2 positionNow = new Vector2(0,0);
+        Boolean succeedGenPath = true;
         for(int i = 0; i < pathRoomAmount; i++){
             Set<String> checkedDirection = new HashSet<>();
             RoomInstance checkingRoomInstance = new RoomInstance(getRandomElement(rooms).get());
-            String checkingDirection;
+            String checkingDirection = null;
             for(int j = 0; j < 4; j++){
                 checkingDirection = randomDirection(checkingRoomInstance, checkedDirection);
-                if (checkingDirection == null) {
+                if(checkingDirection == null) {
                     break;
                 }
-                if (checkCanGenerate(positionNow, roomInstances, checkingDirection)) {
-
+                if(checkCanGenerate(positionNow, roomInstances, checkingDirection)) {
+                    break;
                 }
             }
+            if(checkingDirection == null){
+                succeedGenPath = false;
+                break;
+            }
+        }
+        if(!succeedGenPath){
+            return;
         }
     }
     public String randomDirection(RoomInstance roomInstance, Set<String> ignoreDirection){
