@@ -19,104 +19,112 @@ import the.david.randomdungeon.dungeon.holder.RDPlayer;
 import java.io.File;
 import java.io.IOException;
 
-public class dungeonInstanceManager implements Listener {
-    public dungeonInstanceManager(RandomDungeon plugin){
-        this.plugin = plugin;
-    }
-    private RandomDungeon plugin;
-    public void playDungeon(Player player, String dungeonName){
-        if(!plugin.dungeonManager.getDungeonNames().contains(dungeonName)){
-            player.sendMessage(
-                    Component.text("無此Dungeon").color(NamedTextColor.RED)
-            );
-            return;
-        }
-        Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonName);
-        DungeonInstance dungeonInstance = dungeon.createInstance();
+public class dungeonInstanceManager implements Listener{
+	public dungeonInstanceManager(RandomDungeon plugin){
+		this.plugin = plugin;
+	}
 
-        RDPlayer rdPlayer = playerManager.addRDPlayer(player);
-        rdPlayer.setOriginLocation(player.getLocation());
-        rdPlayer.setPlayingDungeon(dungeon);
-        rdPlayer.setPlayingDungeonInstance(dungeonInstance);
-        player.teleport(new Location(dungeonInstance.getWorld(), 8, 1, 8).toCenterLocation());
-    }
-    public void leaveDungeon(Player player, Boolean deleteEmpty){
-        RDPlayer rdPlayer = playerManager.getRDPlayer(player);
-        if(rdPlayer == null){
-            return;
-        }
-        if(rdPlayer.getOriginLocation() == null){
-            return;
-        }
-        playerManager.removeRDPlayer(player);
-        DungeonInstance dungeonInstance = rdPlayer.getPlayingDungeonInstance();
-        player.teleport(rdPlayer.getOriginLocation());
-        if(deleteEmpty){
-            deleteEmptyInstance(dungeonInstance);
-        }
-    }
-    public void deleteEmptyInstance(DungeonInstance dungeonInstance){
-        if(dungeonInstance.getPlayers().isEmpty()){
-            deleteInstanceWorld(dungeonInstance);
-        }
-    }
-    public Boolean deleteInstanceWorld(DungeonInstance dungeonInstance){
-        World world = dungeonInstance.getWorld();
-        if(world == null){
-            return false;
-        }
-        File worldFile = world.getWorldFolder();
-        Bukkit.unloadWorld(world, true);
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-                try {
+	private final RandomDungeon plugin;
+
+	public void playDungeon(Player player, String dungeonName){
+		if(!plugin.dungeonManager.getDungeonNames().contains(dungeonName)){
+			player.sendMessage(
+					Component.text("無此Dungeon").color(NamedTextColor.RED)
+			);
+			return;
+		}
+		Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonName);
+		DungeonInstance dungeonInstance = dungeon.createInstance();
+
+		RDPlayer rdPlayer = playerManager.addRDPlayer(player);
+		rdPlayer.setOriginLocation(player.getLocation());
+		rdPlayer.setPlayingDungeon(dungeon);
+		rdPlayer.setPlayingDungeonInstance(dungeonInstance);
+		player.teleport(new Location(dungeonInstance.getWorld(), 8, 1, 8).toCenterLocation());
+	}
+
+	public void leaveDungeon(Player player, Boolean deleteEmpty){
+		RDPlayer rdPlayer = playerManager.getRDPlayer(player);
+		if(rdPlayer == null){
+			return;
+		}
+		if(rdPlayer.getOriginLocation() == null){
+			return;
+		}
+		playerManager.removeRDPlayer(player);
+		DungeonInstance dungeonInstance = rdPlayer.getPlayingDungeonInstance();
+		player.teleport(rdPlayer.getOriginLocation());
+		if(deleteEmpty){
+			deleteEmptyInstance(dungeonInstance);
+		}
+	}
+
+	public void deleteEmptyInstance(DungeonInstance dungeonInstance){
+		if(dungeonInstance.getPlayers().isEmpty()){
+			deleteInstanceWorld(dungeonInstance);
+		}
+	}
+
+	public Boolean deleteInstanceWorld(DungeonInstance dungeonInstance){
+		World world = dungeonInstance.getWorld();
+		if(world == null){
+			return false;
+		}
+		File worldFile = world.getWorldFolder();
+		Bukkit.unloadWorld(world, true);
+		new BukkitRunnable(){
+			@Override
+			public void run(){
+				try{
 //                    FileUtils.deleteDirectory(worldFile);
-                    FileUtils.forceDelete(worldFile);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }.runTaskLater(plugin.instance, 100L);
-        return true;
-    }
-    public void deleteInstances(){
-        if(plugin.dungeonManager.getDungeons().isEmpty()){
-            return;
-        }
-        plugin.dungeonManager.getDungeons().forEach(v -> {
-            if(!v.getInstances().isEmpty()){
-                v.getInstances().forEach(j ->{
-                    evacuatePlayers(j);
-                    World world = j.getWorld();
-                    if(world != null){
-                        File worldFile = world.getWorldFolder();
-                        Bukkit.unloadWorld(world, false);
-                        try {
-                            FileUtils.forceDelete(worldFile);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-            }
-        });
-    }
-    public void evacuatePlayers(DungeonInstance dungeonInstance){
-        if(dungeonInstance == null){
-            return;
-        }
-        dungeonInstance.getPlayers().forEach(v ->{
-            leaveDungeon(v, false);
-        });
-    }
-    @EventHandler
-    public void onPlayerQuitServer(PlayerQuitEvent e){
-        Player player = e.getPlayer();
-        RDPlayer rdPlayer = playerManager.getRDPlayer(player);
-        if(rdPlayer == null){
-            return;
-        }
-        leaveDungeon(player, true);
-    }
+					FileUtils.forceDelete(worldFile);
+				}catch(IOException e){
+					throw new RuntimeException(e);
+				}
+			}
+		}.runTaskLater(plugin.instance, 100L);
+		return true;
+	}
+
+	public void deleteInstances(){
+		if(plugin.dungeonManager.getDungeons().isEmpty()){
+			return;
+		}
+		plugin.dungeonManager.getDungeons().forEach(v -> {
+			if(!v.getInstances().isEmpty()){
+				v.getInstances().forEach(j -> {
+					evacuatePlayers(j);
+					World world = j.getWorld();
+					if(world != null){
+						File worldFile = world.getWorldFolder();
+						Bukkit.unloadWorld(world, false);
+						try{
+							FileUtils.forceDelete(worldFile);
+						}catch(IOException e){
+							throw new RuntimeException(e);
+						}
+					}
+				});
+			}
+		});
+	}
+
+	public void evacuatePlayers(DungeonInstance dungeonInstance){
+		if(dungeonInstance == null){
+			return;
+		}
+		dungeonInstance.getPlayers().forEach(v -> {
+			leaveDungeon(v, false);
+		});
+	}
+
+	@EventHandler
+	public void onPlayerQuitServer(PlayerQuitEvent e){
+		Player player = e.getPlayer();
+		RDPlayer rdPlayer = playerManager.getRDPlayer(player);
+		if(rdPlayer == null){
+			return;
+		}
+		leaveDungeon(player, true);
+	}
 }
