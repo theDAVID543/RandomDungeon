@@ -25,12 +25,7 @@ public class RoomInstance{
 	}
 
 	public Integer getDoorAmount(){
-		int amount = 0;
-		if(getDoorEast()) amount += 1;
-		if(getDoorWest()) amount += 1;
-		if(getDoorNorth()) amount += 1;
-		if(getDoorSouth()) amount += 1;
-		return amount;
+		return room.getDoorAmount();
 	}
 
 	public String getRoomName(){

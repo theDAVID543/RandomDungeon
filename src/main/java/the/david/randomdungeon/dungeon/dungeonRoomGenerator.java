@@ -27,14 +27,26 @@ public class dungeonRoomGenerator{
 	private Vector2 positionNow;
 
 	public void generateRoomMap(Integer pathRoomAmount){
-        RoomInstance firstRoomInstance = new RoomInstance(getRandomElement(rooms).get());
-		roomInstances.put(new Vector2(0, 0), firstRoomInstance);
-		positionNow = new Vector2(0, 0);
+		resetRoomMap();
 		while(true){
 			if(generatePath(pathRoomAmount)){
 				break;
+			}else{
+				resetRoomMap();
 			}
 		}
+	}
+	public void resetRoomMap(){
+		roomInstances.clear();
+		Optional<Room> testingRoom;
+		while(true){
+			testingRoom = getRandomElement(rooms);
+			if(testingRoom.isPresent() && testingRoom.get().getDoorAmount() >= 1){
+				break;
+			}
+		}
+		roomInstances.put(new Vector2(0, 0), new RoomInstance(testingRoom.get()));
+		positionNow = new Vector2(0, 0);
 	}
 
 	public Boolean generatePath(Integer pathRoomAmount){
@@ -47,14 +59,16 @@ public class dungeonRoomGenerator{
 			while(true){
 				Bukkit.getLogger().info(checkedDirection.size() + " " + checkingRoomInstanceHere.getDoorAmount());
 				checkingDirection = randomDirection(checkingRoomInstanceHere, checkedDirection);
-				if(checkingDirection == null){
-					break;
-				}
 				if(checkedDirection.size() >= checkingRoomInstanceHere.getDoorAmount()){
 					checkingDirection = null;
 					break;
 				}else if(checkCanGenerate(positionNow, roomInstances, checkingDirection)){
-					ArrayList<Room> newRoomList = new ArrayList<>(rooms);
+					ArrayList<Room> newRoomList = new ArrayList<>();
+					rooms.forEach(v -> {
+						if(v.getDoorAmount() >= 2){
+							newRoomList.add(v);
+						}
+					});
 					Collections.shuffle(newRoomList);
 					Boolean canGenerate = null;
 					for(int k = 0; k < rooms.size(); k++){
@@ -183,6 +197,17 @@ public class dungeonRoomGenerator{
 	}
 
 	public String getRoomShowSymbol(RoomInstance roomInstance){
+		if(roomInstance.getDoorAmount() == 1){
+			if(roomInstance.getDoorNorth()){
+				return "╺";
+			}else if(roomInstance.getDoorEast()){
+				return "╻";
+			}else if(roomInstance.getDoorSouth()){
+				return "╸";
+			}else if(roomInstance.getDoorWest()){
+				return "╹";
+			}
+		}
 		if(roomInstance.getDoorAmount() == 2){
 			if(roomInstance.getDoorNorth() && roomInstance.getDoorEast()){
 				return "┏";

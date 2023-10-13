@@ -4,6 +4,7 @@ import org.codehaus.plexus.util.FileUtils;
 import the.david.randomdungeon.RandomDungeon;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -40,11 +41,20 @@ public class dungeonInstanceWorldHandler{
 	public static void copyDirectory(File sourceFile, File targetFile){
 		try{
 			FileUtils.deleteDirectory(targetFile);
-			FileUtils.copyDirectoryStructure(sourceFile, targetFile);
+			FileUtils.copyDirectoryStructure(new File(sourceFile.getPath() + "/region"), new File(targetFile.getPath() + "/region"));
+			FileUtils.copyDirectoryStructure(new File(sourceFile.getPath() + "/data"), new File(targetFile.getPath() + "/data"));
+//			FileUtils.copyFileToDirectory(new File(sourceFile.getPath() + "/level.dat"), new File(targetFile.getPath() + "/level.dat"));
+
+			InputStream in = Files.newInputStream(new File(sourceFile.getPath() + "/level.dat").toPath());
+			OutputStream out = Files.newOutputStream(new File(targetFile.getPath() + "/level.dat").toPath());
+			byte[] buffer = new byte[1024];
+			int length;
+			while ((length = in.read(buffer)) > 0)
+				out.write(buffer, 0, length);
+			in.close();
+			out.close();
 		}catch(IOException ignored){
 
 		}
-		FileUtils.fileDelete(targetFile.getPath() + "\\\\uid.dat");
-		FileUtils.fileDelete(targetFile.getPath() + "\\\\session.lock");
 	}
 }
