@@ -4,30 +4,44 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import the.david.randomdungeon.RandomDungeon;
 import the.david.randomdungeon.dungeon.holder.*;
+import the.david.randomdungeon.enums.roomDoorDirections;
 
 import java.util.*;
 
 import static java.lang.Math.abs;
 
 public class dungeonRoomGenerator {
-    public dungeonRoomGenerator(RandomDungeon plugin){
+    public dungeonRoomGenerator(RandomDungeon plugin, DungeonInstance dungeonInstance){
         this.plugin = plugin;
+        this.dungeonInstance = dungeonInstance;
+        this.dungeon = dungeonInstance.getDungeon();
+        rooms = dungeon.getRooms();
     }
-    public RandomDungeon plugin;
-    public Random random = new Random();
-    public void generateRoomMap(DungeonInstance dungeonInstance, Integer pathRoomAmount){
-        Dungeon dungeon = dungeonInstance.getDungeon();
-        Collection<Room> rooms =  dungeon.getRooms();
-        Map<Vector2, RoomInstance> roomInstances = new HashMap<>();
-        RoomInstance firstRoomInstance = new RoomInstance(getRandomElement(rooms).get());
+    private final DungeonInstance dungeonInstance;
+    private final Dungeon dungeon;
+    private final RandomDungeon plugin;
+    private final Random random = new Random();
+    private RoomInstance firstRoomInstance;
+    private final Map<Vector2, RoomInstance> roomInstances = new HashMap<>();
+    private final Collection<Room> rooms;
+    private Vector2 positionNow;
+    public void generateRoomMap(Integer pathRoomAmount){
+        firstRoomInstance = new RoomInstance(getRandomElement(rooms).get());
         roomInstances.put(new Vector2(0,0), firstRoomInstance);
-        Vector2 positionNow = new Vector2(0,0);
-        Boolean succeedGenPath = true;
+        positionNow = new Vector2(0,0);
+        while(true){
+            if(generatePath(pathRoomAmount)){
+                break;
+            }
+        }
+    }
+    public Boolean generatePath(Integer pathRoomAmount){
+        boolean succeedGenPath = true;
         for (int i = 0; i < pathRoomAmount; i++) {
-            Set<String> checkedDirection = new HashSet<>();
+            Set<roomDoorDirections> checkedDirection = new HashSet<>();
             RoomInstance checkingRoomInstanceHere = roomInstances.get(positionNow);
             RoomInstance checkingRoomInstance = null;
-            String checkingDirection = null;
+            roomDoorDirections checkingDirection;
             while (true) {
                 Bukkit.getLogger().info(checkedDirection.size() + " " + checkingRoomInstanceHere.getDoorAmount());
                 checkingDirection = randomDirection(checkingRoomInstanceHere, checkedDirection);
@@ -42,25 +56,25 @@ public class dungeonRoomGenerator {
                     Collections.shuffle(newRoomList);
                     Boolean canGenerate = null;
                     for (int k = 0; k < rooms.size(); k++) {
-                        if (checkingDirection.equals("north")) {
+                        if (checkingDirection.equals(roomDoorDirections.NORTH)) {
                             if (newRoomList.get(k).getDoorSouth()) {
                                 checkingRoomInstance = new RoomInstance(newRoomList.get(k));
                                 canGenerate = true;
                                 break;
                             }
-                        } else if (checkingDirection.equals("south")) {
+                        } else if (checkingDirection.equals(roomDoorDirections.SOUTH)) {
                             if (newRoomList.get(k).getDoorNorth()) {
                                 checkingRoomInstance = new RoomInstance(newRoomList.get(k));
                                 canGenerate = true;
                                 break;
                             }
-                        } else if (checkingDirection.equals("east")) {
+                        } else if (checkingDirection.equals(roomDoorDirections.EAST)) {
                             if (newRoomList.get(k).getDoorWest()) {
                                 checkingRoomInstance = new RoomInstance(newRoomList.get(k));
                                 canGenerate = true;
                                 break;
                             }
-                        } else if (checkingDirection.equals("west")) {
+                        } else if (checkingDirection.equals(roomDoorDirections.WEST)) {
                             if (newRoomList.get(k).getDoorEast()) {
                                 checkingRoomInstance = new RoomInstance(newRoomList.get(k));
                                 canGenerate = true;
@@ -79,22 +93,22 @@ public class dungeonRoomGenerator {
                 break;
             }
             switch (checkingDirection) {
-                case "east":
+                case EAST:
                     positionNow = new Vector2(positionNow.getX() + 1, positionNow.getY());
                     roomInstances.put(positionNow, checkingRoomInstance);
                     Bukkit.getLogger().info("east put " + positionNow.getX() + " " + positionNow.getY());
                     break;
-                case "west":
+                case WEST:
                     positionNow = new Vector2(positionNow.getX() - 1, positionNow.getY());
                     roomInstances.put(positionNow, checkingRoomInstance);
                     Bukkit.getLogger().info("west put " + positionNow.getX() + " " + positionNow.getY());
                     break;
-                case "south":
+                case SOUTH:
                     positionNow = new Vector2(positionNow.getX(), positionNow.getY() - 1);
                     roomInstances.put(positionNow, checkingRoomInstance);
                     Bukkit.getLogger().info("south put " + positionNow.getX() + " " + positionNow.getY());
                     break;
-                case "north":
+                case NORTH:
                     positionNow = new Vector2(positionNow.getX(), positionNow.getY() + 1);
                     roomInstances.put(positionNow, checkingRoomInstance);
                     Bukkit.getLogger().info("north put " + positionNow.getX() + " " + positionNow.getY());
@@ -120,47 +134,34 @@ public class dungeonRoomGenerator {
                 Bukkit.getLogger().info(outOneLine.toString());
             }
         }
-//        if(!succeedGenPath){
-//            return;
-//        }
-//        for(int i = -15; i < 15; i++){
-//            StringBuilder outOneLine = new StringBuilder();
-//            for(int j = -15; j < 15; j++){
-//                if(roomInstances.get(new Vector2(i,j)) == null){
-//                    outOneLine.append("╳");
-//                }else{
-//                    outOneLine.append(getRoomShowSymbol(roomInstances.get(new Vector2(i,j))));
-//                }
-//            }
-//            Bukkit.getLogger().info(outOneLine.toString());
-//        }
+        return succeedGenPath;
     }
-    public String randomDirection(RoomInstance roomInstance, Set<String> ignoreDirection){
-        Collection<String> doorDirections = new ArrayList<>();
-        if(roomInstance.getDoorEast() && !ignoreDirection.contains("east")){
-            doorDirections.add("east");
+    public roomDoorDirections randomDirection(RoomInstance roomInstance, Set<roomDoorDirections> ignoreDirection){
+        Collection<roomDoorDirections> doorDirections = new ArrayList<>();
+        if(roomInstance.getDoorEast() && !ignoreDirection.contains(roomDoorDirections.EAST)){
+            doorDirections.add(roomDoorDirections.EAST);
         }
-        if(roomInstance.getDoorWest() && !ignoreDirection.contains("west")){
-            doorDirections.add("west");
+        if(roomInstance.getDoorWest() && !ignoreDirection.contains(roomDoorDirections.WEST)){
+            doorDirections.add(roomDoorDirections.WEST);
         }
-        if(roomInstance.getDoorSouth() && !ignoreDirection.contains("south")){
-            doorDirections.add("south");
+        if(roomInstance.getDoorSouth() && !ignoreDirection.contains(roomDoorDirections.SOUTH)){
+            doorDirections.add(roomDoorDirections.SOUTH);
         }
-        if(roomInstance.getDoorNorth() && !ignoreDirection.contains("north")){
-            doorDirections.add("north");
+        if(roomInstance.getDoorNorth() && !ignoreDirection.contains(roomDoorDirections.NORTH)){
+            doorDirections.add(roomDoorDirections.NORTH);
         }
-        Optional<String> result = getRandomElement(doorDirections);
+        Optional<roomDoorDirections> result = getRandomElement(doorDirections);
         return result.orElse(null);
     }
-    public Boolean checkCanGenerate(Vector2 positionNow, Map<Vector2, RoomInstance> roomInstances, @NotNull String direction){
+    public Boolean checkCanGenerate(Vector2 positionNow, Map<Vector2, RoomInstance> roomInstances, @NotNull roomDoorDirections direction){
         switch (direction) {
-            case "east":
+            case EAST:
                 return roomInstances.get(new Vector2(positionNow.getX() + 1, positionNow.getY())) == null;
-            case "west":
+            case WEST:
                 return roomInstances.get(new Vector2(positionNow.getX() - 1, positionNow.getY())) == null;
-            case "south":
+            case SOUTH:
                 return roomInstances.get(new Vector2(positionNow.getX(), positionNow.getY() - 1)) == null;
-            case "north":
+            case NORTH:
                 return roomInstances.get(new Vector2(positionNow.getX(), positionNow.getY() + 1)) == null;
             default:
                 return null;
@@ -168,6 +169,9 @@ public class dungeonRoomGenerator {
     }
     public <E> Optional<E> getRandomElement(Collection<E> e) {
 //        Bukkit.getLogger().info(String.valueOf(e.size()));
+        if(e.isEmpty()){
+            return Optional.empty();
+        }
         return e.stream()
                 .skip(random.nextInt(e.size()))
                 .findFirst();

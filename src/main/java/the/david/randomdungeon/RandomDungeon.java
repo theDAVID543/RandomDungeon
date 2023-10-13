@@ -36,7 +36,6 @@ public final class RandomDungeon extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(dungeonInstanceManager, instance);
         dungeonEditor = new dungeonEditor(this);
         Bukkit.getPluginManager().registerEvents(dungeonEditor, instance);
-        dungeonRoomGenerator = new dungeonRoomGenerator(this);
     }
 
     @Override
