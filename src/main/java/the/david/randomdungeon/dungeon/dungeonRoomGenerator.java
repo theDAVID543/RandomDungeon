@@ -7,6 +7,7 @@ import the.david.randomdungeon.dungeon.holder.*;
 import the.david.randomdungeon.enums.roomDoorDirections;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Math.abs;
 
@@ -35,6 +36,7 @@ public class dungeonRoomGenerator{
 				resetRoomMap();
 			}
 		}
+		generateMaze();
 	}
 	public void resetRoomMap(){
 		roomInstances.clear();
@@ -71,28 +73,28 @@ public class dungeonRoomGenerator{
 					});
 					Collections.shuffle(newRoomList);
 					Boolean canGenerate = null;
-					for(int k = 0; k < rooms.size(); k++){
+					for(int j = 0; j < rooms.size(); j++){
 						if(checkingDirection.equals(roomDoorDirections.NORTH)){
-							if(newRoomList.get(k).getDoorSouth()){
-								checkingRoomInstance = new RoomInstance(newRoomList.get(k));
+							if(newRoomList.get(j).getDoorSouth()){
+								checkingRoomInstance = new RoomInstance(newRoomList.get(j));
 								canGenerate = true;
 								break;
 							}
 						}else if(checkingDirection.equals(roomDoorDirections.SOUTH)){
-							if(newRoomList.get(k).getDoorNorth()){
-								checkingRoomInstance = new RoomInstance(newRoomList.get(k));
+							if(newRoomList.get(j).getDoorNorth()){
+								checkingRoomInstance = new RoomInstance(newRoomList.get(j));
 								canGenerate = true;
 								break;
 							}
 						}else if(checkingDirection.equals(roomDoorDirections.EAST)){
-							if(newRoomList.get(k).getDoorWest()){
-								checkingRoomInstance = new RoomInstance(newRoomList.get(k));
+							if(newRoomList.get(j).getDoorWest()){
+								checkingRoomInstance = new RoomInstance(newRoomList.get(j));
 								canGenerate = true;
 								break;
 							}
 						}else if(checkingDirection.equals(roomDoorDirections.WEST)){
-							if(newRoomList.get(k).getDoorEast()){
-								checkingRoomInstance = new RoomInstance(newRoomList.get(k));
+							if(newRoomList.get(j).getDoorEast()){
+								checkingRoomInstance = new RoomInstance(newRoomList.get(j));
 								canGenerate = true;
 								break;
 							}
@@ -131,26 +133,133 @@ public class dungeonRoomGenerator{
 					break;
 			}
 			Bukkit.getLogger().info(positionNow.getX() + " " + positionNow.getY() + " " + checkingRoomInstance.getRoomName());
-			StringBuilder outOneLine = new StringBuilder();
-			outOneLine.append("  ");
-			for(int y = -20; y < 21; y++){
-				outOneLine.append(String.format("%2d", abs(y)));
-			}
-			Bukkit.getLogger().info(outOneLine.toString());
-			for(int x = -20; x < 21; x++){
-				outOneLine = new StringBuilder();
-				outOneLine.append(String.format("%2d", abs(x)));
-				for(int y = -20; y < 21; y++){
-					if(roomInstances.get(new Vector2(x, y)) == null){
-						outOneLine.append(String.format("%2s", " "));
-					}else{
-						outOneLine.append(String.format("%2s", getRoomShowSymbol(roomInstances.get(new Vector2(x, y)))));
-					}
-				}
-				Bukkit.getLogger().info(outOneLine.toString());
-			}
+			printDungeonMap();
 		}
 		return succeedGenPath;
+	}
+	private final Integer mazeAddRoomAmount = 100;
+	public void generateMaze(){
+		positionNow = new Vector2(0, 0);
+		Map<Vector2, RoomInstance> mazeRoomInstances = new HashMap<>();
+		AtomicInteger addedRoomAmount = new AtomicInteger();
+		AtomicInteger totalAddedRoomAmount = new AtomicInteger();
+		addedRoomAmount.set(1);
+		AtomicInteger ranTimes = new AtomicInteger();
+		ranTimes.set(100);
+		while(addedRoomAmount.get() > 0 && ranTimes.get() > 0){
+			addedRoomAmount.set(0);
+			ranTimes.set(ranTimes.get() - 1);
+			roomInstances.forEach((k, v) ->{
+				if(checkMazeRoomCanGenerate(k, v)){
+					ArrayList<Room> newRoomList = new ArrayList<>();
+					RoomInstance checkingRoomInstance = null;
+					int maxDoorAmount = Math.round(4 - ((float) totalAddedRoomAmount.get() / (float) mazeAddRoomAmount) * 4);
+					rooms.forEach(v2 -> {
+						if(v2.getDoorAmount() >= 1 && v2.getDoorAmount() <= maxDoorAmount){
+							newRoomList.add(v2);
+						}
+					});
+					Collections.shuffle(newRoomList);
+					Boolean canGenerate = null;
+					for(int j = 0; j < rooms.size(); j++){
+						if(checkingDirection.equals(roomDoorDirections.NORTH)){
+							if(newRoomList.get(j).getDoorSouth()){
+								checkingRoomInstance = new RoomInstance(newRoomList.get(j));
+								canGenerate = true;
+								break;
+							}
+						}else if(checkingDirection.equals(roomDoorDirections.SOUTH)){
+							if(newRoomList.get(j).getDoorNorth()){
+								checkingRoomInstance = new RoomInstance(newRoomList.get(j));
+								canGenerate = true;
+								break;
+							}
+						}else if(checkingDirection.equals(roomDoorDirections.EAST)){
+							if(newRoomList.get(j).getDoorWest()){
+								checkingRoomInstance = new RoomInstance(newRoomList.get(j));
+								canGenerate = true;
+								break;
+							}
+						}else if(checkingDirection.equals(roomDoorDirections.WEST)){
+							if(newRoomList.get(j).getDoorEast()){
+								checkingRoomInstance = new RoomInstance(newRoomList.get(j));
+								canGenerate = true;
+								break;
+							}
+						}
+					}
+					if(canGenerate){
+						Vector2 addRoomPosition;
+						switch(checkingDirection){
+							case EAST:
+								addRoomPosition = new Vector2(k.getX() + 1, k.getY());
+								mazeRoomInstances.put(addRoomPosition, checkingRoomInstance);
+								Bukkit.getLogger().info("east put " + addRoomPosition.getX() + " " + addRoomPosition.getY());
+								break;
+							case WEST:
+								addRoomPosition = new Vector2(k.getX() - 1, k.getY());
+								mazeRoomInstances.put(addRoomPosition, checkingRoomInstance);
+								Bukkit.getLogger().info("west put " + addRoomPosition.getX() + " " + addRoomPosition.getY());
+								break;
+							case SOUTH:
+								addRoomPosition = new Vector2(k.getX(), k.getY() - 1);
+								mazeRoomInstances.put(addRoomPosition, checkingRoomInstance);
+								Bukkit.getLogger().info("south put " + addRoomPosition.getX() + " " + addRoomPosition.getY());
+								break;
+							case NORTH:
+								addRoomPosition = new Vector2(k.getX(), k.getY() + 1);
+								mazeRoomInstances.put(addRoomPosition, checkingRoomInstance);
+								Bukkit.getLogger().info("north put " + addRoomPosition.getX() + " " + addRoomPosition.getY());
+								break;
+						}
+						Bukkit.getLogger().info(k.getX() + " " + k.getY() + " " + checkingRoomInstance.getRoomName() + " " + addedRoomAmount.get());
+						addedRoomAmount.getAndIncrement();
+						totalAddedRoomAmount.getAndIncrement();
+					}else{
+						Bukkit.getLogger().info("canGenerate == null");
+					}
+				}
+			});
+			roomInstances.putAll(mazeRoomInstances);
+			printDungeonMap();
+		}
+	}
+
+	private void printDungeonMap(){
+		StringBuilder outOneLine = new StringBuilder();
+		outOneLine.append("  ");
+		for(int y = -20; y < 21; y++){
+			outOneLine.append(String.format("%2d", abs(y)));
+		}
+		Bukkit.getLogger().info(outOneLine.toString());
+		for(int x = -20; x < 21; x++){
+			outOneLine = new StringBuilder();
+			outOneLine.append(String.format("%2d", abs(x)));
+			for(int y = -20; y < 21; y++){
+				if(roomInstances.get(new Vector2(x, y)) == null){
+					outOneLine.append(String.format("%2s", " "));
+				}else{
+					outOneLine.append(String.format("%2s", getRoomShowSymbol(roomInstances.get(new Vector2(x, y)))));
+				}
+			}
+			Bukkit.getConsoleSender().sendMessage(outOneLine.toString());
+//			Bukkit.getLogger().info(outOneLine.toString());
+		}
+	}
+
+	public roomDoorDirections checkingDirection;
+	public Boolean checkMazeRoomCanGenerate(Vector2 positionNow, RoomInstance roomInstance){
+		Set<roomDoorDirections> checkedDirection = new HashSet<>();
+		while(true){
+			if(checkedDirection.size() >= roomInstance.getDoorAmount()){
+				return false;
+			}
+			checkingDirection = randomDirection(roomInstance, checkedDirection);
+			if(checkCanGenerate(positionNow, roomInstances, checkingDirection)){
+				return true;
+			}
+			checkedDirection.add(checkingDirection);
+		}
 	}
 
 	public roomDoorDirections randomDirection(RoomInstance roomInstance, Set<roomDoorDirections> ignoreDirection){
@@ -199,13 +308,13 @@ public class dungeonRoomGenerator{
 	public String getRoomShowSymbol(RoomInstance roomInstance){
 		if(roomInstance.getDoorAmount() == 1){
 			if(roomInstance.getDoorNorth()){
-				return "╺";
+				return " §a╺§r";
 			}else if(roomInstance.getDoorEast()){
-				return "╻";
+				return " §a╻§r";
 			}else if(roomInstance.getDoorSouth()){
-				return "╸";
+				return " §a╸§r";
 			}else if(roomInstance.getDoorWest()){
-				return "╹";
+				return " §a╹§r";
 			}
 		}
 		if(roomInstance.getDoorAmount() == 2){
