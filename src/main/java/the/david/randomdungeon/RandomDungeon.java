@@ -6,7 +6,7 @@ import the.david.randomdungeon.command.commands;
 import the.david.randomdungeon.dungeon.dungeonEditor;
 import the.david.randomdungeon.dungeon.dungeonInstanceManager;
 import the.david.randomdungeon.dungeon.dungeonManager;
-import the.david.randomdungeon.dungeon.dungeonRoomGenerator;
+import the.david.randomdungeon.dungeon.oldDungeonRoomGenerator;
 import the.david.randomdungeon.handler.config;
 import the.david.randomdungeon.handler.dungeonInstanceWorldHandler;
 
@@ -19,7 +19,7 @@ public final class RandomDungeon extends JavaPlugin{
 	public dungeonEditor dungeonEditor;
 	public static String dungeonFolder;
 	public static RandomDungeon plugin;
-	public dungeonRoomGenerator dungeonRoomGenerator;
+	public oldDungeonRoomGenerator oldDungeonRoomGenerator;
 
 	@Override
 	public void onEnable(){

@@ -2,7 +2,6 @@ package the.david.randomdungeon.command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import the.david.randomdungeon.RandomDungeon;
-import the.david.randomdungeon.dungeon.dungeonRoomGenerator;
+import the.david.randomdungeon.dungeon.oldDungeonRoomGenerator;
 import the.david.randomdungeon.dungeon.playerManager;
 
 import java.util.Objects;
@@ -54,8 +53,8 @@ public class commands implements CommandExecutor{
 			}
 		}else if(args.length == 3){
 			if(Objects.equals(args[0], "editor")){
-				dungeonRoomGenerator dungeonRoomGenerator = new dungeonRoomGenerator(plugin, playerManager.getRDPlayer(player).getPlayingDungeonInstance());
-				dungeonRoomGenerator.generateRoomMap(30);
+				oldDungeonRoomGenerator oldDungeonRoomGenerator = new oldDungeonRoomGenerator(plugin, playerManager.getRDPlayer(player).getPlayingDungeonInstance());
+				oldDungeonRoomGenerator.generateRoomMap(30);
 			}
 		}else if(args.length == 4){
 			if(Objects.equals(args[0], "editor")){
