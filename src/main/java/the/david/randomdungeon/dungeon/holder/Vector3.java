@@ -2,14 +2,15 @@ package the.david.randomdungeon.dungeon.holder;
 
 import java.util.Objects;
 
-public class Vector2{
-	public final int x, y;
+public class Vector3{
+	public final int x, y, z;
 	private final int hashCode;
 
-	public Vector2(int x, int y){
+	public Vector3(int x, int y, int z){
 		this.x = x;
 		this.y = y;
-		this.hashCode = Objects.hash(x, y);
+		this.z = z;
+		this.hashCode = Objects.hash(x, y, z);
 	}
 
 	@Override
@@ -20,8 +21,8 @@ public class Vector2{
 		if(o == null || getClass() != o.getClass()){
 			return false;
 		}
-		Vector2 that = (Vector2) o;
-		return x == that.x && y == that.y;
+		Vector3 that = (Vector3) o;
+		return x == that.x && y == that.y && z == that.z;
 	}
 
 	@Override

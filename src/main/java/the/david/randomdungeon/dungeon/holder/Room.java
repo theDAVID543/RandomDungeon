@@ -3,6 +3,9 @@ package the.david.randomdungeon.dungeon.holder;
 
 import org.bukkit.Location;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Room{
 	public Room(String roomName, Location pos1, Location pos2, Dungeon dungeon){
 		this.roomName = roomName;
@@ -10,6 +13,12 @@ public class Room{
 		this.pos2 = pos2;
 		this.dungeon = dungeon;
 		configPath = "Rooms." + roomName;
+		x1 = Math.min(pos1.getBlockX(), pos2.getBlockX());
+		y1 = Math.min(pos1.getBlockY(), pos2.getBlockY());
+		z1 = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
+		x2 = Math.max(pos1.getBlockX(), pos2.getBlockX());
+		y2 = Math.max(pos1.getBlockY(), pos2.getBlockY());
+		z2 = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
 	}
 
 	public void setDefaultConfigs(){
@@ -27,72 +36,24 @@ public class Room{
 		}
 		pos1 = dungeon.getConfig().getLocation(configPath + ".Pos1");
 		pos2 = dungeon.getConfig().getLocation(configPath + ".Pos2");
-		doorEast = dungeon.getConfig().getBoolean(configPath + ".doorEast");
-		doorWest = dungeon.getConfig().getBoolean(configPath + ".doorWest");
-		doorNorth = dungeon.getConfig().getBoolean(configPath + ".doorNorth");
-		doorSouth = dungeon.getConfig().getBoolean(configPath + ".doorSouth");
 	}
 
+	public int x1, y1, z1, x2, y2, z2;
 	private final Dungeon dungeon;
-	private final String roomName;
-	private Location pos1;
-	private Location pos2;
-	private Boolean doorEast = false;
-	private Boolean doorWest = false;
-	private Boolean doorNorth = false;
-	private Boolean doorSouth = false;
-	private Boolean canRotate;
+	public final String roomName;
+	public Location pos1, pos2;
+	public Boolean canRotate;
 	private final String configPath;
+	public Set<Vector2> doorPositions = new HashSet<>();
 
-	public void setDoorDirection(String direction){
-		doorEast = direction.toUpperCase().contains("E");
-		doorWest = direction.toUpperCase().contains("W");
-		doorNorth = direction.toUpperCase().contains("N");
-		doorSouth = direction.toUpperCase().contains("S");
-		dungeon.getConfig().setObject(configPath + ".doorEast", doorEast);
-		dungeon.getConfig().setObject(configPath + ".doorWest", doorWest);
-		dungeon.getConfig().setObject(configPath + ".doorNorth", doorNorth);
-		dungeon.getConfig().setObject(configPath + ".doorSouth", doorSouth);
+	public void addDoorPosition(int x,int y){
+		doorPositions.add(new Vector2(x,y));
 	}
-	public Integer getDoorAmount(){
-		int amount = 0;
-		if(getDoorEast()) amount += 1;
-		if(getDoorWest()) amount += 1;
-		if(getDoorNorth()) amount += 1;
-		if(getDoorSouth()) amount += 1;
-		return amount;
+	public void addDoorPosition(Vector2 vector2){
+		doorPositions.add(vector2);
 	}
-
-	public Boolean getDoorEast(){
-		return doorEast;
-	}
-
-	public Boolean getDoorWest(){
-		return doorWest;
-	}
-
-	public Boolean getDoorNorth(){
-		return doorNorth;
-	}
-
-	public Boolean getDoorSouth(){
-		return doorSouth;
-	}
-
-	public Boolean getCanRotate(){
-		return canRotate;
-	}
-
-	public Location getPos1(){
-		return pos1;
-	}
-
-	public Location getPos2(){
-		return pos2;
-	}
-
-	public String getRoomName(){
-		return roomName;
+	public void removeDoorPosition(int x,int y){
+		doorPositions.remove(new Vector2(x,y));
 	}
 
 	public void remove(){

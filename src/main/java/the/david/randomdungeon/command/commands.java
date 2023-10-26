@@ -9,8 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import the.david.randomdungeon.RandomDungeon;
-import the.david.randomdungeon.dungeon.oldDungeonRoomGenerator;
-import the.david.randomdungeon.dungeon.playerManager;
 
 import java.util.Objects;
 
@@ -52,10 +50,7 @@ public class commands implements CommandExecutor{
 				plugin.dungeonInstanceManager.playDungeon(player, args[1]);
 			}
 		}else if(args.length == 3){
-			if(Objects.equals(args[0], "editor")){
-				oldDungeonRoomGenerator oldDungeonRoomGenerator = new oldDungeonRoomGenerator(plugin, playerManager.getRDPlayer(player).getPlayingDungeonInstance());
-				oldDungeonRoomGenerator.generateRoomMap(30);
-			}
+
 		}else if(args.length == 4){
 			if(Objects.equals(args[0], "editor")){
 				if(Objects.equals(args[1], "room")){
@@ -76,13 +71,24 @@ public class commands implements CommandExecutor{
 				}
 			}
 		}else if(args.length == 5){
+
+		}else if(args.length == 7){
 			if(Objects.equals(args[0], "editor")){
 				if(Objects.equals(args[1], "room")){
 					if(Objects.equals(args[2], "doors")){
-						if(!plugin.dungeonEditor.setDoorDirections(player, args[3], args[4])){
-							player.sendMessage(
-									Component.text("無法設定door方向").color(NamedTextColor.RED)
-							);
+						if(Objects.equals(args[3], "add")){
+							if(!plugin.dungeonEditor.addDoorPosition(player, args[4], Integer.parseInt(args[5]), Integer.parseInt(args[6]))){
+								player.sendMessage(
+										Component.text("無法新增door").color(NamedTextColor.RED)
+								);
+							}
+						}
+						if(Objects.equals(args[3], "remove")){
+							if(!plugin.dungeonEditor.removeDoorPosition(player, args[4], Integer.parseInt(args[5]), Integer.parseInt(args[6]))){
+								player.sendMessage(
+										Component.text("無法刪除door").color(NamedTextColor.RED)
+								);
+							}
 						}
 					}
 				}

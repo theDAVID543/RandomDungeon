@@ -106,13 +106,28 @@ public class dungeonEditor implements Listener{
 		return true;
 	}
 
-	public Boolean setDoorDirections(Player player, String room, String directions){
+	public Boolean addDoorPosition(Player player, String room, int x, int y){
 		if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
 			return false;
 		}
 		String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
 		Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonShowName);
-		dungeon.getRoomByName(room).setDoorDirection(directions);
+		if(dungeon.getRoomByName(room) == null){
+			return false;
+		}
+		dungeon.getRoomByName(room).addDoorPosition(x, y);
+		return true;
+	}
+	public Boolean removeDoorPosition(Player player, String room, int x, int y){
+		if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
+			return false;
+		}
+		String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
+		Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonShowName);
+		if(dungeon.getRoomByName(room) == null){
+			return false;
+		}
+		dungeon.getRoomByName(room).removeDoorPosition(x, y);
 		return true;
 	}
 

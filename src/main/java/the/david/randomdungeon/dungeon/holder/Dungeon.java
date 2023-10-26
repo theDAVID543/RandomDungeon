@@ -17,7 +17,7 @@ public class Dungeon{
 		showName = dungeonShowName;
 		dungeonDataConfig = new config(plugin, "/data/dungeons/" + dungeonShowName + ".yml");
 		dungeonDataConfig.createCustomConfig();
-		roomSize = dungeonDataConfig.getInteger("RoomSize");
+		gridSize = dungeonDataConfig.getInteger("GridSize");
 		WorldCreator worldCreator = new WorldCreator(dungeonFolder + showName);
 		dungeonWorld = worldCreator.createWorld();
 		if(dungeonDataConfig.getKeys("Rooms") != null){
@@ -35,7 +35,7 @@ public class Dungeon{
 	private final Map<String, Room> rooms = new HashMap<>();
 	private final Set<DungeonInstance> instances = new HashSet<>();
 	private Integer instanceAmount = 0;
-	private Integer roomSize;
+	public Integer gridSize;
 
 	public DungeonInstance createInstance(){
 		Bukkit.unloadWorld(getWorld(), true);
@@ -47,10 +47,6 @@ public class Dungeon{
 
 	public Set<DungeonInstance> getInstances(){
 		return instances;
-	}
-
-	public Integer getRoomSize(){
-		return roomSize;
 	}
 
 	public config getConfig(){
@@ -78,27 +74,22 @@ public class Dungeon{
 	}
 
 	public void addRoom(Room room){
-		rooms.put(room.getRoomName(), room);
+		rooms.put(room.roomName, room);
 	}
 
 	public Boolean createRoomWithName(String roomName, Location pos1, Location pos2){
 		if(!(abs(pos1.getBlockX() - pos2.getBlockX()) == abs(pos1.getBlockZ() - pos2.getBlockZ()))){
 			return false;
 		}
-		if(roomSize == null){
-			setRoomSize(abs(pos1.getBlockX() - pos2.getBlockX()) + 1);
-		}else if(roomSize != abs(pos1.getBlockX() - pos2.getBlockX()) + 1){
+		if(gridSize == null){
+			gridSize = (abs(pos1.getBlockX() - pos2.getBlockX()) + 1);
+		}else if(gridSize % abs(pos1.getBlockX() - pos2.getBlockX()) + 1 != 0){
 			return false;
 		}
 		Room room = new Room(roomName, pos1, pos2, this);
 		addRoom(room);
 		room.setDefaultConfigs();
 		return true;
-	}
-
-	public void setRoomSize(Integer roomSize){
-		getConfig().setObject("RoomSize", roomSize);
-		this.roomSize = roomSize;
 	}
 
 	public void loadWorld(){
