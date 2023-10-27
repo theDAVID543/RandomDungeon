@@ -13,13 +13,6 @@ public class RoomInstance{
 
 	public final Room room;
 
-	public String getRoomName(){
-		return room.getRoomName();
-	}
-
-	public Boolean getCanRotate(){
-		return room.getCanRotate();
-	}
 	public boolean collidesWith(RoomInstance other) {
 		return !(x + width + 1 <= other.x || x >= other.x + other.width + 1 ||
 				y + height + 1 <= other.y || y >= other.y + other.height + 1);

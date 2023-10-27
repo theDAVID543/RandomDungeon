@@ -1,9 +1,6 @@
 package the.david.randomdungeon.dungeon;
 
-import the.david.randomdungeon.dungeon.holder.Edge;
-import the.david.randomdungeon.dungeon.holder.Graph;
-import the.david.randomdungeon.dungeon.holder.GridNode;
-import the.david.randomdungeon.dungeon.holder.RoomInstance;
+import the.david.randomdungeon.dungeon.holder.*;
 
 import java.util.*;
 
@@ -12,6 +9,13 @@ public class dungeonRoomGenerator {
 	private static final int MAX_ATTEMPTS = 10;
 	public static int QUERY_RANGE = 50;
 	private static final int MAX_ROOMS = 50;
+	private Set<Room> roomSet;
+	private final Random random;
+
+	public dungeonRoomGenerator(Set<Room> roomSet){
+		this.roomSet = roomSet;
+		random = new Random();
+	}
 
 	private final List<RoomInstance> roomInstances = new ArrayList<>();
 
@@ -25,34 +29,33 @@ public class dungeonRoomGenerator {
 	}
 
 	public void generateRooms() {
-		Random rand = new Random();
 
 		// Start with a smaller initial room centered.
-		RoomInstance initialRoomInstance = new RoomInstance(-2, -2, 4, 4);
+		RoomInstance initialRoomInstance = new RoomInstance(getRandomStartRoom(),-2, -2, 4, 4);
 		roomInstances.add(initialRoomInstance);
 
 		List<RoomInstance> activeRoomInstances = new ArrayList<>();
 		activeRoomInstances.add(initialRoomInstance);
 
 		while (!activeRoomInstances.isEmpty() && roomInstances.size() < MAX_ROOMS) {
-			RoomInstance current = activeRoomInstances.get(rand.nextInt(activeRoomInstances.size()));
+			RoomInstance current = activeRoomInstances.get(random.nextInt(activeRoomInstances.size()));
 
 			boolean roomAdded = false;
 			for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-				int newWidth = rand.nextInt(MAX_ROOM_SIZE) + 1;
-				int newHeight = rand.nextInt(MAX_ROOM_SIZE) + 1;
+				int newWidth = random.nextInt(MAX_ROOM_SIZE) + 1;
+				int newHeight = random.nextInt(MAX_ROOM_SIZE) + 1;
 
 				// Determine side
-				int side = rand.nextInt(4);
-				int newX = side == 0 ? current.x + rand.nextInt(current.width) :
+				int side = random.nextInt(4);
+				int newX = side == 0 ? current.x + random.nextInt(current.width) :
 						side == 1 ? current.x + current.width + 1 :
-								side == 2 ? current.x + rand.nextInt(current.width) - newWidth :
+								side == 2 ? current.x + random.nextInt(current.width) - newWidth :
 										current.x - newWidth - 1;
 
 				int newY = side == 0 ? current.y - newHeight - 1 :
-						side == 1 ? current.y + rand.nextInt(current.height) :
+						side == 1 ? current.y + random.nextInt(current.height) :
 								side == 2 ? current.y + current.height + 1 :
-										current.y + rand.nextInt(current.height) - newHeight;
+										current.y + random.nextInt(current.height) - newHeight;
 
 				RoomInstance newRoomInstance = new RoomInstance(newX, newY, newWidth, newHeight);
 				if (!roomCollides(newRoomInstance)) {
@@ -105,6 +108,34 @@ public class dungeonRoomGenerator {
 			}
 			System.out.println();
 		}
+	}
+	private final Set<Room> usableRooms = new HashSet<>();
+	public Room getRandomRoom(){
+		if(usableRooms.isEmpty()){
+			roomSet.forEach(v ->{
+				if(!v.doorPositions.isEmpty()){
+					usableRooms.add(v);
+				}
+			});
+		}
+		Optional<Room> randomRoom = getRandomElement(usableRooms);
+        return randomRoom.orElse(null);
+    }
+	public Room getRandomStartRoom(){
+		Room randomRoom = getRandomRoom();
+		if(randomRoom.getCanBeStartRoom()){
+			return randomRoom;
+		}
+		return getRandomStartRoom();
+	}
+	public <E> Optional<E> getRandomElement(Collection<E> e){
+//        Bukkit.getLogger().info(String.valueOf(e.size()));
+		if(e.isEmpty()){
+			return Optional.empty();
+		}
+		return e.stream()
+				.skip(random.nextInt(e.size()))
+				.findFirst();
 	}
 	public static Set<GridNode> path = new HashSet<>();
 

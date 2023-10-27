@@ -36,6 +36,7 @@ public class Room{
 		}
 		pos1 = dungeon.getConfig().getLocation(configPath + ".Pos1");
 		pos2 = dungeon.getConfig().getLocation(configPath + ".Pos2");
+		canBeStartRoom = dungeon.getConfig().getBoolean(configPath + ".canBeStartRoom");
 	}
 
 	public int x1, y1, z1, x2, y2, z2;
@@ -45,7 +46,15 @@ public class Room{
 	public Boolean canRotate;
 	private final String configPath;
 	public Set<Vector2> doorPositions = new HashSet<>();
+	private boolean canBeStartRoom = false;
 
+	public void setCanBeStartRoom(boolean canBeStartRoom){
+		this.canBeStartRoom = canBeStartRoom;
+		dungeon.getConfig().setObject(configPath + ".canBeStartRoom", canBeStartRoom);
+	}
+	public boolean getCanBeStartRoom(){
+		return canBeStartRoom;
+	}
 	public void addDoorPosition(int x,int y){
 		doorPositions.add(new Vector2(x,y));
 	}
