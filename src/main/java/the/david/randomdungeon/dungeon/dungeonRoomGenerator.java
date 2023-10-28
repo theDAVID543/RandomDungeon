@@ -57,7 +57,7 @@ public class dungeonRoomGenerator {
 								side == 2 ? current.y + current.height + 1 :
 										current.y + random.nextInt(current.height) - newHeight;
 
-				RoomInstance newRoomInstance = new RoomInstance(newX, newY, newWidth, newHeight);
+				RoomInstance newRoomInstance = new RoomInstance(getRandomRoom(), newX, newY, newWidth, newHeight);
 				if (!roomCollides(newRoomInstance)) {
 					roomInstances.add(newRoomInstance);
 					activeRoomInstances.add(newRoomInstance);
@@ -139,66 +139,66 @@ public class dungeonRoomGenerator {
 	}
 	public static Set<GridNode> path = new HashSet<>();
 
-	public static void main(String[] args) {
-		for(int e = 0; e < 100; e++){
-			dungeonRoomGenerator generator = new dungeonRoomGenerator();
-			generator.generateRooms();
-			generator.displayGrid();
-			path = new HashSet<>();
-			Graph graph = new Graph(generator.roomInstances);
-			List<Edge> mstEdges = graph.primsMST();
-			mstEdges.forEach(v -> {
-				System.out.println("Edge from: (" + v.source.x + ", " + v.source.y + ") to (" + v.destination.x + ", " + v.destination.y + ")");
-				AStar aStar = new AStar(generator.roomInstances, new GridNode(v.source.x-1, v.source.y), new GridNode(v.destination.x-1, v.destination.y));
-				Set<GridNode> temp = aStar.findPath();
-				if(temp != null){
-					path.addAll(aStar.findPath());
-				}else {
-					System.out.println("No path found");
-				}
-			});
-			Map<GridNode, String> finalResult = new HashMap<>();
-
-//			for (int i = -QUERY_RANGE; i < QUERY_RANGE; i++) {
-//				for (int j = -QUERY_RANGE; j < QUERY_RANGE; j++) {
-//					boolean occupied = false;
-//					for (Room room : generator.rooms) {
-//						if (j >= room.x && j < room.x + room.width && i >= room.y && i < room.y + room.height) {
-//							occupied = true;
-//							break;
-//						}
-//					}
-//					finalResult.put(new GridNode(j, i), occupied ? "███" : "   ");
+//	public static void main(String[] args) {
+//		for(int e = 0; e < 100; e++){
+//			dungeonRoomGenerator generator = new dungeonRoomGenerator();
+//			generator.generateRooms();
+//			generator.displayGrid();
+//			path = new HashSet<>();
+//			Graph graph = new Graph(generator.roomInstances);
+//			List<Edge> mstEdges = graph.primsMST();
+//			mstEdges.forEach(v -> {
+//				System.out.println("Edge from: (" + v.source.x + ", " + v.source.y + ") to (" + v.destination.x + ", " + v.destination.y + ")");
+//				AStar aStar = new AStar(generator.roomInstances, new GridNode(v.source.x-1, v.source.y), new GridNode(v.destination.x-1, v.destination.y));
+//				Set<GridNode> temp = aStar.findPath();
+//				if(temp != null){
+//					path.addAll(aStar.findPath());
+//				}else {
+//					System.out.println("No path found");
 //				}
-//			}
-			generator.roomInstances.forEach(room -> {
-				for(int y = room.y; y < room.y + room.height; y++) {
-					for (int x = room.x; x < room.x + room.width; x++) {
-						finalResult.put(new GridNode(x,y), "███");
-					}
-				}
-			});
-			path.forEach(v -> {
-				finalResult.put(v, "━╋━");
-			});
+//			});
+//			Map<GridNode, String> finalResult = new HashMap<>();
+//
+////			for (int i = -QUERY_RANGE; i < QUERY_RANGE; i++) {
+////				for (int j = -QUERY_RANGE; j < QUERY_RANGE; j++) {
+////					boolean occupied = false;
+////					for (Room room : generator.rooms) {
+////						if (j >= room.x && j < room.x + room.width && i >= room.y && i < room.y + room.height) {
+////							occupied = true;
+////							break;
+////						}
+////					}
+////					finalResult.put(new GridNode(j, i), occupied ? "███" : "   ");
+////				}
+////			}
+//			generator.roomInstances.forEach(room -> {
+//				for(int y = room.y; y < room.y + room.height; y++) {
+//					for (int x = room.x; x < room.x + room.width; x++) {
+//						finalResult.put(new GridNode(x,y), "███");
+//					}
+//				}
+//			});
+//			path.forEach(v -> {
+//				finalResult.put(v, "━╋━");
+//			});
+////			for(int y = -QUERY_RANGE; y < QUERY_RANGE; y++){
+////				for(int x = -QUERY_RANGE; x < QUERY_RANGE; x++){
+////					if(path.contains(new GridNode(x, y))){
+////						finalResult.put(new GridNode(x, y), "━╋━");
+////					}
+////				}
+////			}
 //			for(int y = -QUERY_RANGE; y < QUERY_RANGE; y++){
 //				for(int x = -QUERY_RANGE; x < QUERY_RANGE; x++){
-//					if(path.contains(new GridNode(x, y))){
-//						finalResult.put(new GridNode(x, y), "━╋━");
+//					if(finalResult.get(new GridNode(x, y)) == null){
+//						System.out.print("   ");
+//					}else {
+//						System.out.print(finalResult.get(new GridNode(x, y)));
 //					}
 //				}
+//				System.out.println();
 //			}
-			for(int y = -QUERY_RANGE; y < QUERY_RANGE; y++){
-				for(int x = -QUERY_RANGE; x < QUERY_RANGE; x++){
-					if(finalResult.get(new GridNode(x, y)) == null){
-						System.out.print("   ");
-					}else {
-						System.out.print(finalResult.get(new GridNode(x, y)));
-					}
-				}
-				System.out.println();
-			}
-		}
-	}
+//		}
+//	}
 }
 

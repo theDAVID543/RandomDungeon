@@ -2,7 +2,7 @@ package the.david.randomdungeon;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import the.david.randomdungeon.command.commands;
+import the.david.randomdungeon.command.commandManager;
 import the.david.randomdungeon.dungeon.dungeonEditor;
 import the.david.randomdungeon.dungeon.dungeonInstanceManager;
 import the.david.randomdungeon.dungeon.dungeonManager;
@@ -25,7 +25,7 @@ public final class RandomDungeon extends JavaPlugin{
 		plugin = this;
 		instance = this;
 		dungeonFolder = instance.getDataFolder().getPath().replaceAll("\\\\", "/") + "/DungeonMaps/";
-		Bukkit.getPluginCommand("randomdungeon").setExecutor(new commands(this));
+		Bukkit.getPluginCommand("randomdungeon").setExecutor(new commandManager(this));
 		dungeonsConfig = new config(this, "data/dungeons.yml");
 		dungeonsConfig.createCustomConfig();
 		dungeonManager = new dungeonManager(this);
