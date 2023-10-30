@@ -19,15 +19,18 @@ public class Room{
 		x2 = Math.max(pos1.getBlockX(), pos2.getBlockX());
 		y2 = Math.max(pos1.getBlockY(), pos2.getBlockY());
 		z2 = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
+		pos1.set(x1, y1, z1);
+		pos2.set(x2, y2, z2);
 	}
 
 	public void setDefaultConfigs(){
 		dungeon.getConfig().setLocation(configPath + ".Pos1", pos1);
 		dungeon.getConfig().setLocation(configPath + ".Pos2", pos2);
-		dungeon.getConfig().setObject(configPath + ".doorEast", false);
-		dungeon.getConfig().setObject(configPath + ".doorWest", false);
-		dungeon.getConfig().setObject(configPath + ".doorNorth", false);
-		dungeon.getConfig().setObject(configPath + ".doorSouth", false);
+		dungeon.getConfig().setObject(configPath + ".canBeStartRoom", false);
+//		dungeon.getConfig().setObject(configPath + ".doorEast", false);
+//		dungeon.getConfig().setObject(configPath + ".doorWest", false);
+//		dungeon.getConfig().setObject(configPath + ".doorNorth", false);
+//		dungeon.getConfig().setObject(configPath + ".doorSouth", false);
 	}
 
 	public void loadSettings(){

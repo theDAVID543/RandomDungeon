@@ -78,12 +78,19 @@ public class Dungeon{
 	}
 
 	public Boolean createRoomWithName(String roomName, Location pos1, Location pos2){
-		if(!(abs(pos1.getBlockX() - pos2.getBlockX()) == abs(pos1.getBlockZ() - pos2.getBlockZ()))){
+		int xVector = abs(pos1.getBlockX() - pos2.getBlockX()) + 1;
+		int zVector = abs(pos1.getBlockZ() - pos2.getBlockZ()) + 1;
+		if(xVector % zVector != 0){
+			Bukkit.getLogger().info("Room size is not a square");
 			return false;
 		}
 		if(gridSize == null){
-			gridSize = (abs(pos1.getBlockX() - pos2.getBlockX()) + 1);
-		}else if(gridSize % abs(pos1.getBlockX() - pos2.getBlockX()) + 1 != 0){
+			gridSize = xVector;
+			getConfig().setObject("GridSize", gridSize);
+			Bukkit.getLogger().info("GridSize is null, set to " + gridSize);
+		}else if(xVector % gridSize != 0){
+			Bukkit.getLogger().info("Room size is not a multiple of gridSize");
+			Bukkit.getLogger().info("gridSize: " + gridSize + " xVector: " + xVector);
 			return false;
 		}
 		Room room = new Room(roomName, pos1, pos2, this);
