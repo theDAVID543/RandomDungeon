@@ -13,8 +13,10 @@ import the.david.randomdungeon.command.dungeonManage.EditDungeon;
 import the.david.randomdungeon.command.editor.AddDoor;
 import the.david.randomdungeon.command.editor.AddRoom;
 import the.david.randomdungeon.command.editor.RemoveRoom;
+import the.david.randomdungeon.command.editor.SetGridSize;
 import the.david.randomdungeon.command.player.LeaveDungeon;
 import the.david.randomdungeon.command.player.PlayDungeon;
+import the.david.randomdungeon.utils.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +32,7 @@ public class commandManager implements CommandExecutor{
 		subCommands.put("editor room remove {roomName}", new RemoveRoom(plugin));
 		subCommands.put("editor room doors add {roomName} {x} {y}", new AddDoor(plugin));
 		subCommands.put("editor room doors remove {roomName} {x} {y}", new AddDoor(plugin));
+		subCommands.put("editor gridsize {gridSize}", new SetGridSize(plugin));
 	}
 
 	private final RandomDungeon plugin;

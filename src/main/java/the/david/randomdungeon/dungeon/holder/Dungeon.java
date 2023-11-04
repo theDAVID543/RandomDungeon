@@ -37,6 +37,15 @@ public class Dungeon{
 	private Integer instanceAmount = 0;
 	public Integer gridSize;
 
+	public Boolean setGridSize(Integer gridSize){
+		if(!rooms.isEmpty()){
+			return null;
+		}
+		this.gridSize = gridSize;
+		getConfig().setObject("GridSize", gridSize);
+		return true;
+	}
+
 	public DungeonInstance createInstance(){
 		Bukkit.unloadWorld(getWorld(), true);
 		DungeonInstance instance = new DungeonInstance(this, instanceAmount);

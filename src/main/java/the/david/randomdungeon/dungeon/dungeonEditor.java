@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import the.david.randomdungeon.RandomDungeon;
 import the.david.randomdungeon.dungeon.holder.Dungeon;
+import the.david.randomdungeon.utils.Vector2;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class dungeonEditor implements Listener{
 	}
 
 	public void testCopy(Player player){
-		if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
+		if(!plugin.dungeonEditChecks.playerIsEditingDungeon(player)){
 			return;
 		}
 		CuboidRegion region = new CuboidRegion(toBlockVector3(player, playerSelectionPos1), toBlockVector3(player, playerSelectionPos2));
@@ -81,9 +82,12 @@ public class dungeonEditor implements Listener{
 			Operations.complete(operation);
 		}
 	}
+	public Boolean ifPlayerSelectionValid(Player player){
+		return playerSelectionPos1.get(player) != null && playerSelectionPos2.get(player) != null;
+	}
 
 	public Boolean addRoom(Player player, String roomName){
-		if(playerSelectionPos1.get(player) == null || playerSelectionPos2.get(player) == null || !plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
+		if(!ifPlayerSelectionValid(player) || !plugin.dungeonEditChecks.playerIsEditingDungeon(player)){
 			return false;
 		}
 		Location pos1 = playerSelectionPos1.get(player);
@@ -94,7 +98,7 @@ public class dungeonEditor implements Listener{
 	}
 
 	public Boolean removeRoom(Player player, String roomName){
-		if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
+		if(!plugin.dungeonEditChecks.playerIsEditingDungeon(player)){
 			return false;
 		}
 		String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
@@ -107,7 +111,7 @@ public class dungeonEditor implements Listener{
 	}
 
 	public Boolean addDoorPosition(Player player, String room, int x, int y){
-		if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
+		if(!plugin.dungeonEditChecks.playerIsEditingDungeon(player)){
 			return false;
 		}
 		String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
@@ -115,11 +119,11 @@ public class dungeonEditor implements Listener{
 		if(dungeon.getRoomByName(room) == null){
 			return false;
 		}
-		dungeon.getRoomByName(room).addDoorPosition(x, y);
+		dungeon.getRoomByName(room).addDoor(new Vector2(x, y), playerSelectionPos1.get(player), playerSelectionPos2.get(player));
 		return true;
 	}
 	public Boolean removeDoorPosition(Player player, String room, int x, int y){
-		if(!plugin.dungeonManager.getDungeonNames().contains(plugin.dungeonManager.toShowName(player.getWorld().getName()))){
+		if(!plugin.dungeonEditChecks.playerIsEditingDungeon(player)){
 			return false;
 		}
 		String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
@@ -148,6 +152,14 @@ public class dungeonEditor implements Listener{
 				return (int) playerSelectionPos.get(player).getZ();
 			}
 		};
+	}
+	public Boolean setGridSize(Player player, int GridSize){
+		if(!plugin.dungeonEditChecks.playerIsEditingDungeon(player)){
+			return false;
+		}
+		String dungeonShowName = plugin.dungeonManager.toShowName(player.getWorld().getName());
+		Dungeon dungeon = plugin.dungeonManager.getDungeonByName(dungeonShowName);
+		return dungeon.setGridSize(GridSize);
 	}
 
 	@EventHandler

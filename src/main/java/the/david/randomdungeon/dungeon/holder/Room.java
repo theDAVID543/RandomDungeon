@@ -2,31 +2,36 @@ package the.david.randomdungeon.dungeon.holder;
 
 
 import org.bukkit.Location;
+import the.david.randomdungeon.utils.Pair;
+import the.david.randomdungeon.utils.Vector2;
+import the.david.randomdungeon.utils.Vector3;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Room{
 	public Room(String roomName, Location pos1, Location pos2, Dungeon dungeon){
 		this.roomName = roomName;
-		this.pos1 = pos1;
-		this.pos2 = pos2;
 		this.dungeon = dungeon;
 		configPath = "Rooms." + roomName;
-		x1 = Math.min(pos1.getBlockX(), pos2.getBlockX());
-		y1 = Math.min(pos1.getBlockY(), pos2.getBlockY());
-		z1 = Math.min(pos1.getBlockZ(), pos2.getBlockZ());
-		x2 = Math.max(pos1.getBlockX(), pos2.getBlockX());
-		y2 = Math.max(pos1.getBlockY(), pos2.getBlockY());
-		z2 = Math.max(pos1.getBlockZ(), pos2.getBlockZ());
-		pos1.set(x1, y1, z1);
-		pos2.set(x2, y2, z2);
+		absolutePosition = new Vector3(
+				Math.min(pos1.getBlockX(), pos2.getBlockX()),
+				Math.min(pos1.getBlockY(), pos2.getBlockY()),
+				Math.min(pos1.getBlockZ(), pos2.getBlockZ())
+		);
+		diagonalPosition = toRelativePosition(new Vector3(
+				Math.max(pos1.getBlockX(), pos2.getBlockX()),
+				Math.max(pos1.getBlockY(), pos2.getBlockY()),
+				Math.max(pos1.getBlockZ(), pos2.getBlockZ()))
+		);
 	}
 
 	public void setDefaultConfigs(){
-		dungeon.getConfig().setLocation(configPath + ".Pos1", pos1);
-		dungeon.getConfig().setLocation(configPath + ".Pos2", pos2);
+		dungeon.getConfig().setVector3(configPath + ".absolutePosition", absolutePosition);
+		dungeon.getConfig().setVector3(configPath + ".diagonalPosition", diagonalPosition);
 		dungeon.getConfig().setObject(configPath + ".canBeStartRoom", false);
+//		dungeon.getConfig().setLocation(configPath + ".Pos1", pos1);
+//		dungeon.getConfig().setLocation(configPath + ".Pos2", pos2);
 //		dungeon.getConfig().setObject(configPath + ".doorEast", false);
 //		dungeon.getConfig().setObject(configPath + ".doorWest", false);
 //		dungeon.getConfig().setObject(configPath + ".doorNorth", false);
@@ -37,32 +42,47 @@ public class Room{
 		if(!dungeon.getConfig().hasKey(configPath)){
 			return;
 		}
-		pos1 = dungeon.getConfig().getLocation(configPath + ".Pos1");
-		pos2 = dungeon.getConfig().getLocation(configPath + ".Pos2");
+		absolutePosition = dungeon.getConfig().getVector3(configPath + ".absolutePosition");
+		diagonalPosition = dungeon.getConfig().getVector3(configPath + ".diagonalPosition");
 		canBeStartRoom = dungeon.getConfig().getBoolean(configPath + ".canBeStartRoom");
+		if(dungeon.getConfig().hasKey(configPath + ".doors")){
+			doorPositions = dungeon.getConfig().getDoors(configPath + ".doors");
+		}
+//		pos1 = dungeon.getConfig().getLocation(configPath + ".Pos1");
+//		pos2 = dungeon.getConfig().getLocation(configPath + ".Pos2");
 	}
-
-	public int x1, y1, z1, x2, y2, z2;
+	public Vector3 absolutePosition;
+	public Vector3 diagonalPosition;
 	private final Dungeon dungeon;
 	public final String roomName;
-	public Location pos1, pos2;
 	public Boolean canRotate;
 	private final String configPath;
-	public Set<Vector2> doorPositions = new HashSet<>();
 	private boolean canBeStartRoom = false;
+	public Map<Vector2, Pair<Vector3, Vector3>> doorPositions = new HashMap<>();
+	public void addDoor(Vector2 gridPos, Location pos1, Location pos2){
+		Vector3 doorPos1 = new Vector3(
+				Math.min(pos1.getBlockX(), pos2.getBlockX()),
+				Math.min(pos1.getBlockY(), pos2.getBlockY()),
+				Math.min(pos1.getBlockZ(), pos2.getBlockZ())
+		);
+		Vector3 doorPos2 = new Vector3(
+				Math.max(pos1.getBlockX(), pos2.getBlockX()),
+				Math.max(pos1.getBlockY(), pos2.getBlockY()),
+				Math.max(pos1.getBlockZ(), pos2.getBlockZ())
+		);
+		doorPositions.put(gridPos, new Pair<>(doorPos1, doorPos2));
+		dungeon.getConfig().setDoor(configPath + ".doors", gridPos, doorPos1, doorPos2);
+	}
 
+	public Vector3 toRelativePosition(Vector3 location){
+		return new Vector3(location.x - absolutePosition.x, location.y - absolutePosition.y, location.z - absolutePosition.z);
+	}
 	public void setCanBeStartRoom(boolean canBeStartRoom){
 		this.canBeStartRoom = canBeStartRoom;
 		dungeon.getConfig().setObject(configPath + ".canBeStartRoom", canBeStartRoom);
 	}
 	public boolean getCanBeStartRoom(){
 		return canBeStartRoom;
-	}
-	public void addDoorPosition(int x,int y){
-		doorPositions.add(new Vector2(x,y));
-	}
-	public void addDoorPosition(Vector2 vector2){
-		doorPositions.add(vector2);
 	}
 	public void removeDoorPosition(int x,int y){
 		doorPositions.remove(new Vector2(x,y));

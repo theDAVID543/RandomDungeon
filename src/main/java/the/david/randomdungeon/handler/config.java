@@ -6,13 +6,16 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import the.david.randomdungeon.RandomDungeon;
+import the.david.randomdungeon.utils.Pair;
+import the.david.randomdungeon.utils.Vector2;
+import the.david.randomdungeon.utils.Vector3;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class config{
@@ -63,13 +66,30 @@ public class config{
 		}
 	}
 
-	public void setLocation(String path, Location location){
-		double x = location.getX();
-		double y = location.getY();
-		double z = location.getZ();
-		dataConfig.set(path + ".X", x);
-		dataConfig.set(path + ".Y", y);
-		dataConfig.set(path + ".Z", z);
+//	public void setLocation(String path, Location location){
+//		double x = location.getX();
+//		double y = location.getY();
+//		double z = location.getZ();
+//		dataConfig.set(path + ".X", x);
+//		dataConfig.set(path + ".Y", y);
+//		dataConfig.set(path + ".Z", z);
+//		try{
+//			dataConfig.save(dataConfigFile);
+//		}catch(IOException e){
+//			throw new RuntimeException(e);
+//		}
+//	}
+	public String vector2ToString(Vector2 vector2){
+		return vector2.x + "," + vector2.z;
+	}
+	public void setDoor(String path, Vector2 doorGridPos, Vector3 doorPos1, Vector3 doorPos2){
+		setVector3(path + "." + vector2ToString(doorGridPos) + ".Pos1", doorPos1);
+		setVector3(path + "." + vector2ToString(doorGridPos) + ".Pos2", doorPos2);
+	}
+	public void setVector3(String path, Vector3 vector3){
+		dataConfig.set(path + ".X", vector3.x);
+		dataConfig.set(path + ".Y", vector3.y);
+		dataConfig.set(path + ".Z", vector3.z);
 		try{
 			dataConfig.save(dataConfigFile);
 		}catch(IOException e){
@@ -105,6 +125,19 @@ public class config{
 			return dataConfig.getKeys(false);
 		}
 	}
+	public Map<Vector2, Pair<Vector3, Vector3>> getDoors(String path){
+		Map<Vector2, Pair<Vector3, Vector3>> doors = new HashMap<>();
+		if(dataConfig.getConfigurationSection(path) == null){
+			return null;
+		}
+		dataConfig.getConfigurationSection(path).getKeys(false).forEach(v -> {
+			Vector2 doorGridPos = new Vector2(Integer.parseInt(v.split(",")[0]), Integer.parseInt(v.split(",")[1]));
+			Vector3 doorPos1 = getVector3(path + "." + v + ".Pos1");
+			Vector3 doorPos2 = getVector3(path + "." + v + ".Pos2");
+			doors.put(doorGridPos, new Pair<>(doorPos1, doorPos2));
+		});
+		return doors;
+	}
 
 	public Integer getInteger(String path){
 		if(hasKey(path)){
@@ -120,6 +153,12 @@ public class config{
 		double z = dataConfig.getDouble(path + ".Z");
 		String fileName = dataConfigFile.getName();
 		return new Location(Bukkit.getWorld(fileName.replaceAll(".yml", "")), x, y, z);
+	}
+	public Vector3 getVector3(String path){
+		int x = dataConfig.getInt(path + ".X");
+		int y = dataConfig.getInt(path + ".Y");
+		int z = dataConfig.getInt(path + ".Z");
+		return new Vector3(x, y, z);
 	}
 
 	public Boolean getBoolean(String path){

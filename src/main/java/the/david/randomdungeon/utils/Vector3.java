@@ -1,4 +1,4 @@
-package the.david.randomdungeon.dungeon.holder;
+package the.david.randomdungeon.utils;
 
 import java.util.Objects;
 

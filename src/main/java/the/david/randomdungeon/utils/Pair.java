@@ -1,7 +1,7 @@
-package the.david.randomdungeon.command;
+package the.david.randomdungeon.utils;
 
 public class Pair<T, U>{
-	Pair(T Key, U Value){
+	public Pair(T Key, U Value){
 		this.Key = Key;
 		this.Value = Value;
 	}

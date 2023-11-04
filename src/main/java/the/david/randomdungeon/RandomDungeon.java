@@ -6,6 +6,7 @@ import the.david.randomdungeon.command.commandManager;
 import the.david.randomdungeon.dungeon.dungeonEditor;
 import the.david.randomdungeon.dungeon.dungeonInstanceManager;
 import the.david.randomdungeon.dungeon.dungeonManager;
+import the.david.randomdungeon.dungeon.utils.DungeonEditChecks;
 import the.david.randomdungeon.handler.config;
 import the.david.randomdungeon.handler.dungeonInstanceWorldHandler;
 
@@ -16,6 +17,7 @@ public final class RandomDungeon extends JavaPlugin{
 	public dungeonInstanceManager dungeonInstanceManager;
 	public dungeonInstanceWorldHandler dungeonInstanceWorldHandler;
 	public dungeonEditor dungeonEditor;
+	public DungeonEditChecks dungeonEditChecks;
 	public static String dungeonFolder;
 	public static RandomDungeon plugin;
 
@@ -34,6 +36,7 @@ public final class RandomDungeon extends JavaPlugin{
 		Bukkit.getPluginManager().registerEvents(dungeonInstanceManager, instance);
 		dungeonEditor = new dungeonEditor(this);
 		Bukkit.getPluginManager().registerEvents(dungeonEditor, instance);
+		dungeonEditChecks = new DungeonEditChecks(this);
 	}
 
 	@Override

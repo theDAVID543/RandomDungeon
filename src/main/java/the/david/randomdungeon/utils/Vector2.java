@@ -1,15 +1,15 @@
-package the.david.randomdungeon.dungeon.holder;
+package the.david.randomdungeon.utils;
 
 import java.util.Objects;
 
 public class Vector2{
-	public final int x, y;
+	public final int x, z;
 	private final int hashCode;
 
-	public Vector2(int x, int y){
+	public Vector2(int x, int z){
 		this.x = x;
-		this.y = y;
-		this.hashCode = Objects.hash(x, y);
+		this.z = z;
+		this.hashCode = Objects.hash(x, z);
 	}
 
 	@Override
@@ -21,7 +21,7 @@ public class Vector2{
 			return false;
 		}
 		Vector2 that = (Vector2) o;
-		return x == that.x && y == that.y;
+		return x == that.x && z == that.z;
 	}
 
 	@Override
